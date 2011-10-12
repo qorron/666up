@@ -23,13 +23,20 @@ import android.util.Log;
 /**
  * @author quattro
  * 
+ * uploads the image and calls the {@link ImageProcessor} should the file be to large
+ * 
  */
 public class ImageUploader {
 
 	/**
-	 * @param filename
-	 * @return
-	 * @throws Exception
+	 * handles the image upload
+	 * 
+	 * @param filename the path to the image
+	 * @return the {@link URL} of the uploaded image or null if the upload failed
+	 * @throws MalformedURLException if the upload failed
+	 * @throws IOException on a network error
+	 * @throws ProtocolException the server responded unexpectedly
+	 * @throws FileNotFoundException the suggested file was not found
 	 */
 	public static URL upload(String filename) throws MalformedURLException, IOException, ProtocolException, FileNotFoundException {
 		HttpURLConnection connection = null;

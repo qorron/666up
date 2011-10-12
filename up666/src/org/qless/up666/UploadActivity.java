@@ -31,6 +31,8 @@ import android.widget.Toast;
 /**
  * @author quattro
  * 
+ * This activity handles the send intent for images.
+ * 
  */
 public class UploadActivity extends Activity {
 
@@ -164,6 +166,8 @@ public class UploadActivity extends Activity {
 	/**
 	 * @author quattro
 	 * 
+	 * handles the resize and upload process in a background thread 
+	 * 
 	 */
 	private class ImageUploadTask extends AsyncTask<String, Integer, URL> {
 
@@ -225,6 +229,8 @@ public class UploadActivity extends Activity {
 	}
 
 	/**
+	 * Displays the image URL and enables the copy/share buttons
+	 * 
 	 * @param url
 	 */
 	protected void showURL(URL url) {
@@ -239,6 +245,8 @@ public class UploadActivity extends Activity {
 	}
 
 	/**
+	 * Displays an error dialogue with the abilits to send a log on some errors
+	 * 
 	 * @param ex
 	 */
 	protected void errorDialogue(Exception ex, Error error) {
@@ -287,6 +295,7 @@ public class UploadActivity extends Activity {
 	}
 
 	/**
+	 * Constructs an ACTION_SEND intent to email a stacktrace
 	 * 
 	 */
 	private void sendError() {

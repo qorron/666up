@@ -14,18 +14,22 @@ import android.util.Log;
  * 
  * @author quattro
  * 
+ * resizes an image if it is too large
+ * 
  */
 
 public class ImageProcessor {
 
 	/**
-	 * 
+	 * maximum pixels in one dimension
 	 */
 	static int maxPixel = 1200;
 
 	/**
-	 * @param imagePath
-	 * @param httpPostOutputStream
+	 * loads, resizes and writes the image to the http connection
+	 * 
+	 * @param imagePath the path to the image file
+	 * @param httpPostOutputStream the http stream
 	 */
 	public static void process(String imagePath, DataOutputStream httpPostOutputStream) {
 

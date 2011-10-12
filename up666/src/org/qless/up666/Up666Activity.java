@@ -8,13 +8,13 @@ import android.widget.TextView;
 
 /**
  * @author quattro
+ * 
+ * this does not much.
+ * at the moment, it displays some explanation on how to use the app
  *
  */
 public class Up666Activity extends Activity {
 
-	/**
-	 * 
-	 */
 	private TextView mIntruductionBodyView;
 
 	/** Called when the activity is first created. */
