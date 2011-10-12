@@ -128,7 +128,7 @@ public class UploadActivity extends Activity {
 					ok = true;
 				} else if (scheme.equals("file")) {
 					mimeType = intent.getType();
-					filePath = uri.toString().substring("file://".length());
+					filePath = uri.getPath();
 					ok = true;
 				} else {
 					Log.d("ullilog", "no content scheme, is: " + scheme);
