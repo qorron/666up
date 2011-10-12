@@ -13,8 +13,18 @@
     <string name="introductionTitle">Upload a file and share the link</string>
     <string name="introductionBody">This app is not launched directly. Instead, it can be used to share a picture via the gallery, the camera or any other app which provides an image. After the image has been uploaded to 666kb.com a link to the image is shown. This link can be copied to the clipboad or shared using any app capable of sharing text like email or SMS.\n\nThe developer of this app is not associated with the 666kb.com website.</string>
     <string name="copyToast">URL copied</string>
+    
+    <string name="errorTitleHostNotFound">666kb.com not found</string>
+    <string name="errorMessageHostNotFound">The name 666kb.com could not be resolved. Is the network okay?</string>
+    <string name="errorTitleNetwork">Network problem</string>
+    <string name="errorMessageNetwork">There was a problem while uploading the image. Maybe a firewall?</string>
+    <string name="errorTitleFileNotFound">File not found</string>
+    <string name="errorMessageFileNotFound">The requested file could not be found. There an unfixed bug regarding file uploads from a filemanager at least in Android 2.3. Please use the gallery until this is fixed.</string>
+    <string name="errorTitleBadURL">Bad reply</string>
+    <string name="errorMessageBadURL">The reply 666kb sent did not contain an image URL. There may be something wrong with the image (666kb supports only png, jpeg and gif) or the site has been changed.\n\nSend an error report?</string>
     <string name="errorTitle">Unexpected Error</string>
-    <string name="errorMessage">Something went wrong. It may be a network error or an invalid image. PLease, just try again and if the error persists you could help me fix it by sending me an error report.\n\nSend an error report now?</string>
+    <string name="errorMessage">Something went wrong. PLease, just try again and if the error persists you could help me fix it by sending me an error report.\n\nSend an error report now?</string>
+
     <string name="errorSendAction">Send error report...</string>
     <string name="errorSubject">Error Report</string>
 </resources>

@@ -27,8 +27,7 @@ public class ImageProcessor {
 	 * @param imagePath
 	 * @param httpPostOutputStream
 	 */
-	public static void process(String imagePath, double oversizeFactor,
-			DataOutputStream httpPostOutputStream) {
+	public static void process(String imagePath, DataOutputStream httpPostOutputStream) {
 
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inJustDecodeBounds = true; // to get the size without actually

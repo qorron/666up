@@ -1,8 +1,13 @@
 package org.qless.up666;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
+import java.net.UnknownHostException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -25,7 +30,7 @@ import android.widget.Toast;
 
 /**
  * @author quattro
- *
+ * 
  */
 public class UploadActivity extends Activity {
 
@@ -38,10 +43,17 @@ public class UploadActivity extends Activity {
 	private Button mShareButton;
 
 	private String imageURL;
-	
-	private Exception ex;
 
-	/* (non-Javadoc)
+	private Exception ex;
+	private Error error;
+
+	public enum Error {
+		FILE_NOT_FOUND, HOST_NOT_FOUND, NETWORK, BAD_URL
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 */
 	@Override
@@ -80,7 +92,6 @@ public class UploadActivity extends Activity {
 		});
 
 		mShareButton.setOnClickListener(new Button.OnClickListener() {
-
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent i = new Intent(android.content.Intent.ACTION_SEND);
@@ -151,6 +162,69 @@ public class UploadActivity extends Activity {
 	}
 
 	/**
+	 * @author quattro
+	 * 
+	 */
+	private class ImageUploadTask extends AsyncTask<String, Integer, URL> {
+
+		private Exception ex;
+		private Error error;
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#onPreExecute()
+		 */
+		@Override
+		protected void onPreExecute() {
+			mProgress.setVisibility(ProgressBar.VISIBLE);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#doInBackground(Params[])
+		 */
+		@Override
+		protected URL doInBackground(String... params) {
+			URL url = null;
+			try {
+				url = ImageUploader.upload(params[0]);
+			} catch (FileNotFoundException e) {
+				error = Error.FILE_NOT_FOUND;
+			} catch (UnknownHostException e) {
+				error = Error.HOST_NOT_FOUND;
+			} catch (MalformedURLException e) {
+				error = Error.BAD_URL;
+				ex = e;
+			} catch (ProtocolException e) {
+				ex = e;
+			} catch (IOException e) {
+				error = Error.NETWORK;
+			} catch (Exception e) {
+				ex = e;
+			}
+			return url;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+		 */
+		@Override
+		protected void onPostExecute(URL result) {
+			mProgress.setVisibility(ProgressBar.INVISIBLE);
+			if (ex != null || error != null) {
+				errorDialogue(ex, error);
+			} else {
+				showURL(result);
+			}
+		}
+
+	}
+
+	/**
 	 * @param url
 	 */
 	protected void showURL(URL url) {
@@ -167,28 +241,55 @@ public class UploadActivity extends Activity {
 	/**
 	 * @param ex
 	 */
-	protected void errorDialogue(Exception ex) {
+	protected void errorDialogue(Exception ex, Error error) {
 		this.ex = ex;
+		this.error = error;
 		final AlertDialog.Builder b = new AlertDialog.Builder(this);
 		b.setIcon(android.R.drawable.ic_dialog_alert);
-		b.setTitle(R.string.errorTitle);
-		b.setMessage(R.string.errorMessage);
-		b.setPositiveButton(android.R.string.yes,
-				new DialogInterface.OnClickListener() {
-					// do something when the button is clicked
-					public void onClick(DialogInterface arg0, int arg1) {
-						sendError();
-					}
-				});
-		b.setNegativeButton(android.R.string.no, null);
+
+		switch (error) {
+		case HOST_NOT_FOUND:
+			b.setTitle(R.string.errorTitleHostNotFound);
+			b.setMessage(R.string.errorMessageHostNotFound);
+			break;
+		case NETWORK:
+			b.setTitle(R.string.errorTitleNetwork);
+			b.setMessage(R.string.errorMessageNetwork);
+			break;
+		case FILE_NOT_FOUND:
+			b.setTitle(R.string.errorTitleFileNotFound);
+			b.setMessage(R.string.errorMessageFileNotFound);
+			break;
+		case BAD_URL:
+			b.setTitle(R.string.errorTitleBadURL);
+			b.setMessage(R.string.errorMessageBadURL);
+			break;
+		default:
+			b.setTitle(R.string.errorTitle);
+			b.setMessage(R.string.errorMessage);
+			break;
+		}
+
+		if (ex != null) { // exception -> send error report
+			b.setPositiveButton(android.R.string.yes,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface arg0, int arg1) {
+							sendError();
+						}
+					});
+			b.setNegativeButton(android.R.string.no, null);
+		} else { // just a normal error like network problems
+			// add a neutral button to the alert box and assign a click listener
+			b.setNeutralButton("Ok", null);
+		}
 		b.show();
 
 	}
-	
+
 	/**
 	 * 
 	 */
-	private void sendError(){
+	private void sendError() {
 		StringWriter sw = new StringWriter();
 		ex.printStackTrace(new PrintWriter(sw));
 		String stacktrace = sw.toString();
@@ -197,65 +298,17 @@ public class UploadActivity extends Activity {
 		final Intent emailIntent = new Intent(
 				android.content.Intent.ACTION_SEND);
 		emailIntent.setType("plain/text");
-		emailIntent
-				.putExtra(
-						android.content.Intent.EXTRA_EMAIL,
-						new String[] { "android@qless.org" });
-		emailIntent.putExtra(
-				android.content.Intent.EXTRA_SUBJECT,
-				getString(R.string.app_name) + " " + getString(R.string.errorSubject));
-		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
-				stacktrace);
+		emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
+				new String[] { "android@qless.org" });
+		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
+				getString(R.string.app_name) + " "
+						+ getString(R.string.errorSubject));
+		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, stacktrace);
 
 		// start the email activity - note you need to start it
 		// with a chooser
 		startActivity(Intent.createChooser(emailIntent,
 				getString(R.string.errorSendAction)));
-		
-	}
-
-	/**
-	 * @author quattro
-	 *
-	 */
-	private class ImageUploadTask extends AsyncTask<String, Integer, URL> {
-
-		private Exception ex;
-
-		/* (non-Javadoc)
-		 * @see android.os.AsyncTask#onPreExecute()
-		 */
-		@Override
-		protected void onPreExecute() {
-			mProgress.setVisibility(ProgressBar.VISIBLE);
-		}
-
-		/* (non-Javadoc)
-		 * @see android.os.AsyncTask#doInBackground(Params[])
-		 */
-		@Override
-		protected URL doInBackground(String... params) {
-			URL url = null;
-			try {
-				url = ImageUploader.upload(params[0]);
-			} catch (Exception e) {
-				ex = e;
-			}
-			return url;
-		}
-
-		/* (non-Javadoc)
-		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-		 */
-		@Override
-		protected void onPostExecute(URL result) {
-			mProgress.setVisibility(ProgressBar.INVISIBLE);
-			if (ex != null) {
-				errorDialogue(ex);
-			} else {
-				showURL(result);
-			}
-		}
 
 	}
 }

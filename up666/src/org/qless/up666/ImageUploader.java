@@ -7,8 +7,12 @@ import java.io.BufferedInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -27,7 +31,7 @@ public class ImageUploader {
 	 * @return
 	 * @throws Exception
 	 */
-	public static URL upload(String filename) throws Exception {
+	public static URL upload(String filename) throws MalformedURLException, IOException, ProtocolException, FileNotFoundException {
 		HttpURLConnection connection = null;
 		DataOutputStream outputStream = null;
 
@@ -46,8 +50,8 @@ public class ImageUploader {
 		URL imageURL = null;
 
 
-			URL url = new URL(urlServer);
-			connection = (HttpURLConnection) url.openConnection();
+			URL url = new URL(urlServer); // theoretically possible MalformedURLException 
+			connection = (HttpURLConnection) url.openConnection(); // IOException -> network error
 
 			// Allow Inputs & Outputs
 			connection.setDoInput(true);
@@ -55,22 +59,22 @@ public class ImageUploader {
 			connection.setUseCaches(false);
 
 			// Enable POST method
-			connection.setRequestMethod("POST");
+			connection.setRequestMethod("POST"); // ProtocolException -> 
 
 			connection.setRequestProperty("Connection", "Keep-Alive");
 			connection.setRequestProperty("Content-Type",
 					"multipart/form-data;boundary=" + boundary);
 
-			outputStream = new DataOutputStream(connection.getOutputStream());
+			outputStream = new DataOutputStream(connection.getOutputStream()); // IOException -> network error
 
-			outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+			outputStream.writeBytes(twoHyphens + boundary + lineEnd); // IOException -> network error
 			outputStream
 					.writeBytes("Content-Disposition: form-data; name=\"MAX_FILE_SIZE\""
 							+ lineEnd);
-			outputStream.writeBytes(lineEnd);
-			outputStream.writeBytes(maxSize + lineEnd);
+			outputStream.writeBytes(lineEnd); // IOException -> network error
+			outputStream.writeBytes(maxSize + lineEnd); // IOException -> network error
 
-			outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+			outputStream.writeBytes(twoHyphens + boundary + lineEnd); // ...
 			outputStream
 					.writeBytes("Content-Disposition: form-data; name=\"submit\""
 							+ lineEnd);
@@ -89,54 +93,57 @@ public class ImageUploader {
 			long length = file.length();
 
 			if (length > maxSize) {
-				ImageProcessor.process(filename,((double)length)/maxSize , outputStream);
+				ImageProcessor.process(filename, outputStream);
 			} else {
 				FileInputStream fileInputStream = new FileInputStream(new File(
-						pathToOurFile));
+						pathToOurFile));  // FileNotFoundException -> most likely the filename got escaped anf needs to be unescaped (known to happen on froyo+ and sending from a filemanager)
 
-				bytesAvailable = fileInputStream.available();
+				bytesAvailable = fileInputStream.available(); // IOException (file) -> should not really happen unless sdcard is broken?
 				bufferSize = Math.min(bytesAvailable, maxBufferSize);
 				buffer = new byte[bufferSize];
 
 				// Read file
-				bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+				bytesRead = fileInputStream.read(buffer, 0, bufferSize); // IOException (file)
 
 				while (bytesRead > 0) {
-					outputStream.write(buffer, 0, bufferSize);
-					bytesAvailable = fileInputStream.available();
+					outputStream.write(buffer, 0, bufferSize); // IOException -> network error
+					bytesAvailable = fileInputStream.available(); // IOException (file)
 					bufferSize = Math.min(bytesAvailable, maxBufferSize);
-					bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+					bytesRead = fileInputStream.read(buffer, 0, bufferSize); // IOException (file) 
 				}
-				fileInputStream.close();
+				fileInputStream.close(); // IOException (file) 
 
 			}
-			outputStream.writeBytes(lineEnd);
+			outputStream.writeBytes(lineEnd); // IOException -> network error
 			outputStream.writeBytes(twoHyphens + boundary + twoHyphens
 					+ lineEnd);
 
+			outputStream.flush(); // IOException -> network error
+			outputStream.close(); // ..
+
 			// Responses from the server (code and message)
-			int serverResponseCode = connection.getResponseCode();
-			String serverResponseMessage = connection.getResponseMessage();
+			int serverResponseCode = connection.getResponseCode(); // IOException -> network error
+			String serverResponseMessage = connection.getResponseMessage(); // IOException -> network error
 
 			Log.i("ImageUpload", serverResponseCode + serverResponseMessage);
 			InputStream in = new BufferedInputStream(
-					connection.getInputStream());
+					connection.getInputStream()); // IOException -> network error
 
 			Scanner sc = new Scanner(in);
 			String content = sc.useDelimiter("\\Z").next();
 			sc.close();
 
-			imageURL = new URL(parseResultPage(content));
+			imageURL = new URL(parseResultPage(content)); // MalformedURLException -> if parseResultPage(String page) fails
 
-			outputStream.flush();
-			outputStream.close();
 			Log.d("ImageUpload", imageURL.toString());
 		return imageURL;
 	}
 
 	/**
-	 * @param page
-	 * @return
+	 * Tkes the whole webpage as a String and tries to parse the image url
+	 * 
+	 * @param page the HTML document
+	 * @return the URL of the uploaded image or null if it was not found
 	 */
 	private static String parseResultPage(String page) {
 		Pattern p = Pattern.compile("(\\Qhttp://666kb.com/i/\\E.*?)\"");
@@ -144,7 +151,7 @@ public class ImageUploader {
 		if (m.find()) {
 			return m.group(1);
 		} else {
-			Log.i("content", page);
+			Log.d("content", page);
 			return null;
 		}
 	}
