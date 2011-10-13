@@ -1,11 +1,14 @@
 666up! is a rudimentary client for the website 666kb.com on Android devices.
 
-666kb.com is a very simple image hoster. It is: - Anonymous (no login required, however your ip will be reported to the authorities if you do something bad) - Spamfree and adfree - Private (there is no index of uploaded images, so one has to know the exact url of an image to access it)
+666kb.com is a very simple image hoster. It is:
+ - Anonymous (no login required, however your ip will be reported to the authorities if you do something bad)
+ - Spamfree and adfree
+ - Private (there is no index of uploaded images, so one has to know the exact url of an image to access it)
 
 The developer of this app is not associated with 666kb.com.
 
 You can use this 666up! to upload images from your Android device to 666kb.com and then share the image link.
 
-666kb.com has a size limit of 666kb for any uploaded pictures. pictures that are larger than that will be resized so they fit in that boundary. this is done on the android device and since the memory in such a device is usually limited, the result may not be as beautiful as it could have been when the picture is resized on a computer.
+666kb.com has a size limit of 666kb for any uploaded picture. pictures that are larger than that will be resized so they fit in that boundary. this is done on the Android device and since the memory in such a device is usually limited, the result may not be as beautiful as it could have been when the picture is resized on a computer.
 
 This App and its source code is licensed under the GPLv3
