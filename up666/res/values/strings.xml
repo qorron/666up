@@ -23,7 +23,7 @@
     <string name="errorTitleBadURL">Bad reply</string>
     <string name="errorMessageBadURL">The reply 666kb sent did not contain an image URL. There may be something wrong with the image (666kb supports only png, jpeg and gif) or the site has been changed.\n\nSend an error report?</string>
     <string name="errorTitle">Unexpected Error</string>
-    <string name="errorMessage">Something went wrong. PLease, just try again and if the error persists you could help me fix it by sending me an error report.\n\nSend an error report now?</string>
+    <string name="errorMessage">Something went wrong. Please, just try again and if the error persists you could help me fix it by sending me an error report.\n\nSend an error report now?</string>
 
     <string name="errorSendAction">Send error report...</string>
     <string name="errorSubject">Error Report</string>
