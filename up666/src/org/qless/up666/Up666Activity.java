@@ -70,7 +70,6 @@ public class Up666Activity extends Activity {
 		mButtonCamera = (Button) findViewById(R.id.buttonCam);
 		if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
 			// we do have a camera
-			mButtonCamera.setText("has cam");
 			mButtonCamera.setOnClickListener(new Button.OnClickListener() {
 				public void onClick(View v) {
 					startCameraIntent();
@@ -79,7 +78,7 @@ public class Up666Activity extends Activity {
 
 		} else {
 			// we don't have a camera
-			mButtonCamera.setText("no cam");
+			mButtonCamera.setVisibility(View.GONE);
 		}
 	}
 
