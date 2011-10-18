@@ -9,20 +9,22 @@
     <string name="copy">Kopieren</string>
     <string name="uploadAt">Bild hochladen bei</string>
     <string name="introductionTitle">Bild hochladen und Link weitergeben</string>
-    <string name="introductionBody">Diese Anwendung wird nicht direkt gestartet. Stattdessen kann sie verwendet werden, um ein Bild von der Kamera oder der Gallerie mittels der Weitergabefunktion als Link weiter zu geben. Nachdem das Bild bei 666kb.com hochgeladen wurde, wird der Link zum Bild angezeigt. Dieser Link kann dann in die Zwischenablage kopiert oder als Text weitergegeben werden.\n\nDiese Anwendung stammt nicht vom Betreiber der Webseite 666kb.com.</string>
+    <string name="introductionBody">Diese Anwendung wird nicht direkt gestartet. Stattdessen kann sie verwendet werden, um ein Bild von der Kamera oder der Galerie mittels der Weitergabefunktion als Link weiterzugeben. Nachdem das Bild bei 666kb.com hochgeladen wurde, wird der Link zum Bild angezeigt. Dieser Link kann dann in die Zwischenablage kopiert oder als Text weitergegeben werden.\n\nDiese Anwendung stammt nicht vom Betreiber der Webseite 666kb.com.</string>
     <string name="copyToast">URL kopiert</string>    
     
     <string name="errorTitleHostNotFound">666kb.com nicht gefunden</string>
     <string name="errorMessageHostNotFound">Der Name 666kb.com konnte nicht aufgelöst werden. Ist eine Netzwerkverbindung vorhanden?</string>
     <string name="errorTitleNetwork">Neztwerkproblem</string>
-    <string name="errorMessageNetwork">Wärend des hochladens ist ein Fehler aufgetreten. Bitte ggf. Firewall prüfen</string>
+    <string name="errorMessageNetwork">Wärend des Hochladens ist ein Fehler aufgetreten. Bitte ggf. Firewall prüfen</string>
     <string name="errorTitleFileNotFound">Datei nicht gefunden</string>
     <string name="errorMessageFileNotFound">Die angegebene Datei konnte nicht gefunden werden bzw. der Zugriff darauf wurde verweigert.</string>
     <string name="errorTitleBadURL">Unverständliche Antwort</string>
-    <string name="errorMessageBadURL">Die Antwort von 666kb.com enthielt keine Bilder-URL. Möglicherweise ist das Bild nicht in Ordnung (666kb.com unterstützt nur: png, jpeg und gif) oder die Webseite wurde verändert. Falls dieser Fehler wiederholt bei mehreren Dateien auftritt kannst Du hier einen Fehlerbericht senden.\n\nFehlerbericht jetzt senden?</string>
-    
+    <string name="errorMessageBadURL">Die Antwort von 666kb.com enthielt keine Bilder-URL. Möglicherweise ist das Bild nicht in Ordnung (666kb.com unterstützt nur: png, jpeg und gif) oder die Webseite wurde verändert. Falls dieser Fehler wiederholt bei mehreren Dateien auftritt kannst du hier einen Fehlerbericht senden.\n\nFehlerbericht jetzt senden?</string>
+    <string name="errorTitleBadIntent">Falscher Aufruf</string>
+    <string name="errorMessageBadIntent">Die Anwendung konnte den Aurfur nicht verstehen.</string>
     <string name="errorTitle">Unerwarteter Fehler</string>
-    <string name="errorMessage">Irgendetwas lief schief. Wenn der Fehler weiterhin besteht kannst Du helfen den Fehler zu beheben, indem Du einen Fehlerbericht sendest.\n\nFehlerbericht jetzt senden?</string>
+    <string name="errorMessage">Irgendetwas lief schief. Wenn der Fehler weiterhin besteht kannst du helfen den Fehler zu beheben, indem du einen Fehlerbericht sendest.\n\nFehlerbericht jetzt senden?</string>
+    
     <string name="errorSendAction">Fehlerbericht senden...</string>
     <string name="errorSubject">Fehlerbericht</string>
 </resources>
