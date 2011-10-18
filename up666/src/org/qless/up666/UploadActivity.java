@@ -70,7 +70,7 @@ public class UploadActivity extends Activity {
 	private Error error;
 
 	public enum Error {
-		FILE_NOT_FOUND, HOST_NOT_FOUND, NETWORK, BAD_URL
+		FILE_NOT_FOUND, HOST_NOT_FOUND, NETWORK, BAD_URL, BAD_INTENT
 	}
 
 	/*
@@ -81,9 +81,7 @@ public class UploadActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.d("ullilog", "start");
 		Intent intent = getIntent();
-		Log.d("ullilog", "got intent");
 		setContentView(R.layout.upload);
 
 		mGreeting = (TextView) findViewById(R.id.hello);
@@ -128,14 +126,11 @@ public class UploadActivity extends Activity {
 
 		});
 
-		Log.d("ullilog", "about to proccess intent");
-
 		if (Intent.ACTION_SEND.equals(intent.getAction())) {
 			Bundle extras = intent.getExtras();
 			if (extras.containsKey(Intent.EXTRA_STREAM)) {
 				Uri uri = (Uri) extras.getParcelable(Intent.EXTRA_STREAM);
 				String scheme = uri.getScheme();
-				Log.d("ullilog", "content scheme is: " + scheme);
 				boolean ok = false;
 				String mimeType = null;
 				String filePath = null;
@@ -153,12 +148,8 @@ public class UploadActivity extends Activity {
 					filePath = uri.getPath();
 					ok = true;
 				} else {
-					Log.d("ullilog", "no content scheme, is: " + scheme);
-					Context context = getApplicationContext();
-					CharSequence text = "no content scheme";
-					int duration = Toast.LENGTH_SHORT;
-					Toast toast = Toast.makeText(context, text, duration);
-					toast.show();
+					Log.d("BAD_INTENT", "no content scheme, is: " + scheme);
+					errorDialogue(null, Error.BAD_INTENT);
 				}
 				if (ok) {
 					mMimeTypeTextView.setText(mimeType);
@@ -166,20 +157,12 @@ public class UploadActivity extends Activity {
 					new ImageUploadTask().execute(filePath);
 				}
 			} else {
-				Log.d("ullilog", "no EXTRA_STREAM");
-				Context context = getApplicationContext();
-				CharSequence text = "no EXTRA_STREAM";
-				int duration = Toast.LENGTH_SHORT;
-				Toast toast = Toast.makeText(context, text, duration);
-				toast.show();
+				Log.d("BAD_INTENT", "no EXTRA_STREAM");
+				errorDialogue(null, Error.BAD_INTENT);
 			}
 		} else {
-			Log.d("ullilog", "no ACTION_SEND");
-			Context context = getApplicationContext();
-			CharSequence text = "no ACTION_SEND";
-			int duration = Toast.LENGTH_SHORT;
-			Toast toast = Toast.makeText(context, text, duration);
-			toast.show();
+			Log.d("BAD_INTENT", "no ACTION_SEND");
+			errorDialogue(null, Error.BAD_INTENT);
 		}
 	}
 
@@ -291,6 +274,10 @@ public class UploadActivity extends Activity {
 		case BAD_URL:
 			b.setTitle(R.string.errorTitleBadURL);
 			b.setMessage(R.string.errorMessageBadURL);
+			break;
+		case BAD_INTENT:
+			b.setTitle(R.string.errorTitleBadIntent);
+			b.setMessage(R.string.errorMessageBadIntent);
 			break;
 		default:
 			b.setTitle(R.string.errorTitle);

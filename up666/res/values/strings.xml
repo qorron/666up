@@ -22,6 +22,8 @@
     <string name="errorMessageFileNotFound">The requested file could not be found.</string>
     <string name="errorTitleBadURL">Bad reply</string>
     <string name="errorMessageBadURL">The reply 666kb sent did not contain an image URL. There may be something wrong with the image (666kb supports only png, jpeg and gif) or the site has been changed.\n\nSend an error report?</string>
+    <string name="errorTitleBadIntent">Wrong call format</string>
+    <string name="errorMessageBadIntent">The app was called in a way it could not understand.</string>
     <string name="errorTitle">Unexpected Error</string>
     <string name="errorMessage">Something went wrong. Please, just try again and if the error persists you could help me fix it by sending me an error report.\n\nSend an error report now?</string>
 

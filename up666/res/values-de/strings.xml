@@ -20,9 +20,11 @@
     <string name="errorMessageFileNotFound">Die angegebene Datei konnte nicht gefunden werden bzw. der Zugriff darauf wurde verweigert.</string>
     <string name="errorTitleBadURL">Unverständliche Antwort</string>
     <string name="errorMessageBadURL">Die Antwort von 666kb.com enthielt keine Bilder-URL. Möglicherweise ist das Bild nicht in Ordnung (666kb.com unterstützt nur: png, jpeg und gif) oder die Webseite wurde verändert. Falls dieser Fehler wiederholt bei mehreren Dateien auftritt kannst du hier einen Fehlerbericht senden.\n\nFehlerbericht jetzt senden?</string>
-    
+    <string name="errorTitleBadIntent">Falscher Aufruf</string>
+    <string name="errorMessageBadIntent">Die Anwendung konnte den Aurfur nicht verstehen.</string>
     <string name="errorTitle">Unerwarteter Fehler</string>
     <string name="errorMessage">Irgendetwas lief schief. Wenn der Fehler weiterhin besteht kannst du helfen den Fehler zu beheben, indem du einen Fehlerbericht sendest.\n\nFehlerbericht jetzt senden?</string>
+    
     <string name="errorSendAction">Fehlerbericht senden...</string>
     <string name="errorSubject">Fehlerbericht</string>
 </resources>
