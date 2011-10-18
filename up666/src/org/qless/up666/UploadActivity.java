@@ -85,18 +85,9 @@ public class UploadActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		if (savedInstanceState != null) {
-			Log.d("imageURL", "got savedInstanceState");
-
 			imageURL = savedInstanceState.getString("imageURL");
 			filePath = savedInstanceState.getString("filePath");
 			mimeType = savedInstanceState.getString("mimeType");
-
-			if (imageURL != null) {
-				Log.d("imageURL", "saved url: " + imageURL);
-			} else {
-				Log.d("imageURL", "saved url null");
-			}
-
 		}
 		Intent intent = getIntent();
 		setContentView(R.layout.upload);
@@ -144,7 +135,7 @@ public class UploadActivity extends Activity {
 		});
 
 		if (imageURL == null) {
-			Log.d("imageURL", "is null");
+			// since there is no previously stored url, we have to upload the file
 			if (Intent.ACTION_SEND.equals(intent.getAction())) {
 				Bundle extras = intent.getExtras();
 				if (extras.containsKey(Intent.EXTRA_STREAM)) {
@@ -184,7 +175,7 @@ public class UploadActivity extends Activity {
 				errorDialogue(null, Error.BAD_INTENT);
 			}
 		} else {
-			Log.d("imageURL", "is not null: " + imageURL);
+			// we already have a url, so we just update the gui and make it look like expected.
 			resetGUI();
 		}
 
@@ -196,12 +187,6 @@ public class UploadActivity extends Activity {
 	 * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
 	 */
 	protected void onSaveInstanceState(Bundle outState) {
-		if (imageURL != null) {
-			Log.d("imageURL", "saving url: " + imageURL);
-		} else {
-			Log.d("imageURL", "saving url, but null");
-		}
-
 		outState.putString("imageURL", imageURL);
 		outState.putString("mimeType", mimeType);
 		outState.putString("filePath", filePath);
