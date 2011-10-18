@@ -51,7 +51,7 @@ import android.widget.Toast;
 /**
  * @author quattro
  * 
- * This activity handles the send intent for images.
+ *         This activity handles the send intent for images.
  * 
  */
 public class UploadActivity extends Activity {
@@ -68,6 +68,8 @@ public class UploadActivity extends Activity {
 
 	private Exception ex;
 	private Error error;
+	private String mimeType;
+	private String filePath;
 
 	public enum Error {
 		FILE_NOT_FOUND, HOST_NOT_FOUND, NETWORK, BAD_URL, BAD_INTENT
@@ -81,6 +83,21 @@ public class UploadActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		if (savedInstanceState != null) {
+			Log.d("imageURL", "got savedInstanceState");
+
+			imageURL = savedInstanceState.getString("imageURL");
+			filePath = savedInstanceState.getString("filePath");
+			mimeType = savedInstanceState.getString("mimeType");
+
+			if (imageURL != null) {
+				Log.d("imageURL", "saved url: " + imageURL);
+			} else {
+				Log.d("imageURL", "saved url null");
+			}
+
+		}
 		Intent intent = getIntent();
 		setContentView(R.layout.upload);
 
@@ -126,111 +143,73 @@ public class UploadActivity extends Activity {
 
 		});
 
-		if (Intent.ACTION_SEND.equals(intent.getAction())) {
-			Bundle extras = intent.getExtras();
-			if (extras.containsKey(Intent.EXTRA_STREAM)) {
-				Uri uri = (Uri) extras.getParcelable(Intent.EXTRA_STREAM);
-				String scheme = uri.getScheme();
-				boolean ok = false;
-				String mimeType = null;
-				String filePath = null;
-				if (scheme.equals("content")) {
-					mimeType = intent.getType();
-					ContentResolver contentResolver = getContentResolver();
-					Cursor cursor = contentResolver.query(uri, null, null,
-							null, null);
-					cursor.moveToFirst();
-					filePath = cursor.getString(cursor
-							.getColumnIndexOrThrow(Images.Media.DATA));
-					ok = true;
-				} else if (scheme.equals("file")) {
-					mimeType = intent.getType();
-					filePath = uri.getPath();
-					ok = true;
+		if (imageURL == null) {
+			Log.d("imageURL", "is null");
+			if (Intent.ACTION_SEND.equals(intent.getAction())) {
+				Bundle extras = intent.getExtras();
+				if (extras.containsKey(Intent.EXTRA_STREAM)) {
+					Uri uri = (Uri) extras.getParcelable(Intent.EXTRA_STREAM);
+					String scheme = uri.getScheme();
+					boolean ok = false;
+					mimeType = null;
+					filePath = null;
+					if (scheme.equals("content")) {
+						mimeType = intent.getType();
+						ContentResolver contentResolver = getContentResolver();
+						Cursor cursor = contentResolver.query(uri, null, null,
+								null, null);
+						cursor.moveToFirst();
+						filePath = cursor.getString(cursor
+								.getColumnIndexOrThrow(Images.Media.DATA));
+						ok = true;
+					} else if (scheme.equals("file")) {
+						mimeType = intent.getType();
+						filePath = uri.getPath();
+						ok = true;
+					} else {
+						Log.d("BAD_INTENT", "no content scheme, is: " + scheme);
+						errorDialogue(null, Error.BAD_INTENT);
+					}
+					if (ok) {
+						mMimeTypeTextView.setText(mimeType);
+						mFilePathTextView.setText(filePath);
+						new ImageUploadTask().execute(filePath);
+					}
 				} else {
-					Log.d("BAD_INTENT", "no content scheme, is: " + scheme);
+					Log.d("BAD_INTENT", "no EXTRA_STREAM");
 					errorDialogue(null, Error.BAD_INTENT);
 				}
-				if (ok) {
-					mMimeTypeTextView.setText(mimeType);
-					mFilePathTextView.setText(filePath);
-					new ImageUploadTask().execute(filePath);
-				}
 			} else {
-				Log.d("BAD_INTENT", "no EXTRA_STREAM");
+				Log.d("BAD_INTENT", "no ACTION_SEND");
 				errorDialogue(null, Error.BAD_INTENT);
 			}
 		} else {
-			Log.d("BAD_INTENT", "no ACTION_SEND");
-			errorDialogue(null, Error.BAD_INTENT);
+			Log.d("imageURL", "is not null: " + imageURL);
+			resetGUI();
 		}
+
 	}
 
-	/**
-	 * @author quattro
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * handles the resize and upload process in a background thread 
-	 * 
+	 * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
 	 */
-	private class ImageUploadTask extends AsyncTask<String, Integer, URL> {
-
-		private Exception ex;
-		private Error error;
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#onPreExecute()
-		 */
-		@Override
-		protected void onPreExecute() {
-			mProgress.setVisibility(ProgressBar.VISIBLE);
+	protected void onSaveInstanceState(Bundle outState) {
+		if (imageURL != null) {
+			Log.d("imageURL", "saving url: " + imageURL);
+		} else {
+			Log.d("imageURL", "saving url, but null");
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#doInBackground(Params[])
-		 */
-		@Override
-		protected URL doInBackground(String... params) {
-			URL url = null;
-			try {
-				url = ImageUploader.upload(params[0]);
-			} catch (FileNotFoundException e) {
-				error = Error.FILE_NOT_FOUND;
-			} catch (UnknownHostException e) {
-				error = Error.HOST_NOT_FOUND;
-			} catch (MalformedURLException e) {
-				error = Error.BAD_URL;
-				ex = e;
-			} catch (ProtocolException e) {
-				ex = e;
-			} catch (IOException e) {
-				error = Error.NETWORK;
-			} catch (Exception e) {
-				ex = e;
-			}
-			return url;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-		 */
-		@Override
-		protected void onPostExecute(URL result) {
-			mProgress.setVisibility(ProgressBar.INVISIBLE);
-			if (ex != null || error != null) {
-				errorDialogue(ex, error);
-			} else {
-				showURL(result);
-			}
-		}
-
+		outState.putString("imageURL", imageURL);
+		outState.putString("mimeType", mimeType);
+		outState.putString("filePath", filePath);
 	}
 
+	
+		
+	
 	/**
 	 * Displays the image URL and enables the copy/share buttons
 	 * 
@@ -309,7 +288,7 @@ public class UploadActivity extends Activity {
 		StringWriter sw = new StringWriter();
 		ex.printStackTrace(new PrintWriter(sw));
 		String stacktrace = sw.toString();
-
+	
 		// create an email intent to send to yourself
 		final Intent emailIntent = new Intent(
 				android.content.Intent.ACTION_SEND);
@@ -320,11 +299,85 @@ public class UploadActivity extends Activity {
 				getString(R.string.app_name) + " "
 						+ getString(R.string.errorSubject));
 		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, stacktrace);
-
+	
 		// start the email activity - note you need to start it
 		// with a chooser
 		startActivity(Intent.createChooser(emailIntent,
 				getString(R.string.errorSendAction)));
+	
+	}
 
+	private void resetGUI () {
+		mProgress.setVisibility(ProgressBar.INVISIBLE);
+		mMimeTypeTextView.setText(mimeType);
+		mFilePathTextView.setText(filePath);
+		mImageURLTextView.setText(imageURL);
+		mCopyButton.setEnabled(true);
+		mShareButton.setEnabled(true);
+		}
+	
+	/**
+	 * @author quattro
+	 * 
+	 *         handles the resize and upload process in a background thread
+	 * 
+	 */
+	private class ImageUploadTask extends AsyncTask<String, Integer, URL> {
+	
+		private Exception ex;
+		private Error error;
+	
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#onPreExecute()
+		 */
+		@Override
+		protected void onPreExecute() {
+			mProgress.setVisibility(ProgressBar.VISIBLE);
+		}
+	
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#doInBackground(Params[])
+		 */
+		@Override
+		protected URL doInBackground(String... params) {
+			URL url = null;
+			try {
+				url = ImageUploader.upload(params[0]);
+			} catch (FileNotFoundException e) {
+				error = Error.FILE_NOT_FOUND;
+			} catch (UnknownHostException e) {
+				error = Error.HOST_NOT_FOUND;
+			} catch (MalformedURLException e) {
+				error = Error.BAD_URL;
+				ex = e;
+			} catch (ProtocolException e) {
+				ex = e;
+			} catch (IOException e) {
+				error = Error.NETWORK;
+			} catch (Exception e) {
+				ex = e;
+			}
+			return url;
+		}
+	
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+		 */
+		@Override
+		protected void onPostExecute(URL result) {
+			mProgress.setVisibility(ProgressBar.INVISIBLE);
+			if (ex != null || error != null) {
+				errorDialogue(ex, error);
+			} else {
+				showURL(result);
+			}
+		}
+	
 	}
 }
