@@ -8,6 +8,8 @@
     <string name="share_subject">A picture link</string>
     <string name="share">Share</string>
     <string name="copy">Copy</string>
+    <string name="buttonCamera">Take picture</string>
+    <string name="buttonNoCamera">No camera present</string>
     <string name="imageHoster">http://666kb.com</string>
     <string name="uploadAt">Upload Image at</string>
     <string name="introductionTitle">Upload a file and share the link</string>
