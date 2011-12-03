@@ -8,6 +8,7 @@
     <string name="share">Senden</string>
     <string name="copy">Kopieren</string>
     <string name="buttonCamera">Fotografieren</string>
+    <string name="buttonNoCamera">Keine Kamera vorhanden</string>
     <string name="uploadAt">Bild hochladen bei</string>
     <string name="introductionTitle">Bild hochladen und Link weitergeben</string>
     <string name="introductionBody">Diese Anwendung wird nicht direkt gestartet. Stattdessen kann sie verwendet werden, um ein Bild von der Kamera oder der Galerie mittels der Weitergabefunktion als Link weiterzugeben. Nachdem das Bild bei 666kb.com hochgeladen wurde, wird der Link zum Bild angezeigt. Dieser Link kann dann in die Zwischenablage kopiert oder als Text weitergegeben werden.\n\nDiese Anwendung stammt nicht vom Betreiber der Webseite 666kb.com.</string>

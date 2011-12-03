@@ -78,7 +78,8 @@ public class Up666Activity extends Activity {
 
 		} else {
 			// we don't have a camera
-			mButtonCamera.setVisibility(View.GONE);
+			mButtonCamera.setEnabled(false);
+			mButtonCamera.setText(R.string.buttonNoCamera);
 		}
 	}
 
