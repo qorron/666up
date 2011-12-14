@@ -71,6 +71,9 @@ public class UploadActivity extends Activity {
 	private String mimeType;
 	private String filePath;
 
+	private UploadsDbAdapter mDbHelper;
+	
+	
 	public enum Error {
 		FILE_NOT_FOUND, HOST_NOT_FOUND, NETWORK, BAD_URL, BAD_INTENT
 	}
@@ -83,6 +86,9 @@ public class UploadActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		mDbHelper = new UploadsDbAdapter(this);
+        mDbHelper.open();
 
 		if (savedInstanceState != null) {
 			imageURL = savedInstanceState.getString("imageURL");
@@ -187,6 +193,8 @@ public class UploadActivity extends Activity {
 	 * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
 	 */
 	protected void onSaveInstanceState(Bundle outState) {
+		mDbHelper.close();
+		mDbHelper = null;
 		outState.putString("imageURL", imageURL);
 		outState.putString("mimeType", mimeType);
 		outState.putString("filePath", filePath);
@@ -208,6 +216,8 @@ public class UploadActivity extends Activity {
 
 			mCopyButton.setEnabled(true);
 			mShareButton.setEnabled(true);
+			
+			storeUpload();
 		}
 	}
 
@@ -363,6 +373,9 @@ public class UploadActivity extends Activity {
 				showURL(result);
 			}
 		}
+	}
 	
+	protected long storeUpload() {
+	    return mDbHelper.createNote(imageURL, filePath, null, "");
 	}
 }
