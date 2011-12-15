@@ -56,7 +56,7 @@ public class ImageProcessor {
 	public static byte[] thumbnail(String imagePath, int size) {
 		int bytes = size * size / 2;
 		ByteArrayOutputStream thumbnailStream = new ByteArrayOutputStream(bytes);
-		process(imagePath, thumbnailStream, size, false);
+		process(imagePath, thumbnailStream, size, true);
 
 		Log.i("ImageScale", "requwsted size: " + size + " projected bytes: "
 				+ bytes + " used bytes: " + thumbnailStream.size());
