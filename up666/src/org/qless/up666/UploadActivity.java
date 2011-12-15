@@ -41,6 +41,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore.Images;
 import android.text.ClipboardManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -55,6 +57,10 @@ import android.widget.Toast;
  *         This activity handles the send intent for images.
  * 
  */
+/**
+ * @author quattro
+ * 
+ */
 public class UploadActivity extends Activity {
 
 	private TextView mMimeTypeTextView;
@@ -65,16 +71,17 @@ public class UploadActivity extends Activity {
 	private Button mCopyButton;
 	private Button mShareButton;
 
-	private String imageURL;
-
 	private Exception ex;
-	private String mimeType;
-	private String filePath;
+	private String mImageURL;
+	private String mMimeType;
+	private String mFilePath;
+	private long mUploadId = -1;
+	private String mComment;
 
 	private UploadsDbAdapter mDbHelper;
 	@SuppressWarnings("unused")
 	private Error error;
-	private long mUploadId = -1;
+	private EditText mCommentEditText;
 
 	public enum Error {
 		FILE_NOT_FOUND, HOST_NOT_FOUND, NETWORK, BAD_URL, BAD_INTENT
@@ -91,12 +98,13 @@ public class UploadActivity extends Activity {
 
 		mDbHelper = new UploadsDbAdapter(this);
 		mDbHelper.open();
-
+		mComment = ""; // initialize, so there is no null in the db
 		if (savedInstanceState != null) {
-			imageURL = savedInstanceState.getString("imageURL");
-			filePath = savedInstanceState.getString("filePath");
-			mimeType = savedInstanceState.getString("mimeType");
+			mImageURL = savedInstanceState.getString("mImageURL");
+			mFilePath = savedInstanceState.getString("mFilePath");
+			mMimeType = savedInstanceState.getString("mMimeType");
 			mUploadId = savedInstanceState.getLong("mUploadId");
+			mComment = savedInstanceState.getString("mComment");
 		}
 		Intent intent = getIntent();
 		setContentView(R.layout.upload);
@@ -108,6 +116,7 @@ public class UploadActivity extends Activity {
 		mProgress = (ProgressBar) findViewById(R.id.progressBarUpload);
 		mCopyButton = (Button) findViewById(R.id.buttonCopy);
 		mShareButton = (Button) findViewById(R.id.buttonShare);
+		mCommentEditText = (EditText) findViewById(R.id.commentEditText);
 
 		mGreeting.setText(getString(R.string.uploadAt) + " " + getString(R.string.imageHoster));
 
@@ -115,10 +124,26 @@ public class UploadActivity extends Activity {
 		mCopyButton.setEnabled(false);
 		mShareButton.setEnabled(false);
 
+		mCommentEditText.addTextChangedListener(new TextWatcher() {
+
+			public void afterTextChanged(Editable s) {
+				// XXX do something
+				mComment = s.toString();
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				// XXX do something
+			}
+
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				// XXX do something
+			}
+		});
+
 		mCopyButton.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
 				ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-				clipboard.setText(imageURL);
+				clipboard.setText(mImageURL);
 				Context context = getApplicationContext();
 				CharSequence text = getString(R.string.copyToast);
 				int duration = Toast.LENGTH_SHORT;
@@ -133,14 +158,14 @@ public class UploadActivity extends Activity {
 				Intent i = new Intent(android.content.Intent.ACTION_SEND);
 				i.setType("text/plain");
 				i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_subject));
-				i.putExtra(Intent.EXTRA_TEXT, imageURL);
+				i.putExtra(Intent.EXTRA_TEXT, mImageURL);
 				startActivity(Intent.createChooser(i, getString(R.string.share_title)));
 
 			}
 
 		});
 
-		if (imageURL == null) {
+		if (mImageURL == null) {
 			// since there is no previously stored url, we have to upload the
 			// file
 			if (Intent.ACTION_SEND.equals(intent.getAction())) {
@@ -149,28 +174,28 @@ public class UploadActivity extends Activity {
 					Uri uri = (Uri) extras.getParcelable(Intent.EXTRA_STREAM);
 					String scheme = uri.getScheme();
 					boolean ok = false;
-					mimeType = null;
-					filePath = null;
+					mMimeType = null;
+					mFilePath = null;
 					if (scheme.equals("content")) {
-						mimeType = intent.getType();
+						mMimeType = intent.getType();
 						ContentResolver contentResolver = getContentResolver();
 						Cursor cursor = contentResolver.query(uri, null, null, null, null);
 						cursor.moveToFirst();
-						filePath = cursor
-								.getString(cursor.getColumnIndexOrThrow(Images.Media.DATA));
+						mFilePath = cursor.getString(cursor
+								.getColumnIndexOrThrow(Images.Media.DATA));
 						ok = true;
 					} else if (scheme.equals("file")) {
-						mimeType = intent.getType();
-						filePath = uri.getPath();
+						mMimeType = intent.getType();
+						mFilePath = uri.getPath();
 						ok = true;
 					} else {
 						Log.d("BAD_INTENT", "no content scheme, is: " + scheme);
 						errorDialogue(null, Error.BAD_INTENT);
 					}
 					if (ok) {
-						mMimeTypeTextView.setText(mimeType);
-						mFilePathTextView.setText(filePath);
-						new ImageUploadTask().execute(filePath);
+						mMimeTypeTextView.setText(mMimeType);
+						mFilePathTextView.setText(mFilePath);
+						new ImageUploadTask().execute(mFilePath);
 					}
 				} else {
 					Log.d("BAD_INTENT", "no EXTRA_STREAM");
@@ -188,24 +213,57 @@ public class UploadActivity extends Activity {
 
 	}
 
+	/**
+	 * Saves what we have in the db. if the entry already exists, just the comments will be updated.
+	 * otherwise an entry (with thumbnail) will be generated and stored.
+	 */
+	private void saveState() {
+		if (-1 == mUploadId) {
+			// has never been saved to the db
+			Log.d("database", "stored new upload");
+			byte[] thumbnail = ImageProcessor.thumbnail(mFilePath, 100);
+			mUploadId = mDbHelper.createUpload(mImageURL, mFilePath, thumbnail, mComment);
+		} else {
+			// has been saved, just update the comment
+			mDbHelper.updateCommentOnUpload(mUploadId, mComment);
+			Log.d("database", "update comment");
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
 	 */
+	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		if (-1 != mUploadId) {
-			EditText commentEditText = (EditText) findViewById(R.id.commentEditText);
-			mDbHelper.updateCommentOnUpload(mUploadId, commentEditText.getText().toString());
-		} 
-		
-		mDbHelper.close();
-		mDbHelper = null;
-		
-		outState.putString("imageURL", imageURL);
-		outState.putString("mimeType", mimeType);
-		outState.putString("filePath", filePath);
+		saveState();
+
+		outState.putString("mImageURL", mImageURL);
+		outState.putString("mMimeType", mMimeType);
+		outState.putString("mFilePath", mFilePath);
 		outState.putLong("mUploadId", mUploadId);
+		outState.putString("mComment", mComment);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		saveState();
+		if (mDbHelper != null) {
+			mDbHelper.close();
+			mDbHelper = null;
+		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (mDbHelper == null) {
+			mDbHelper = new UploadsDbAdapter(this);
+			mDbHelper.open();
+		}
+		//resetGUI();
 	}
 
 	/**
@@ -217,12 +275,10 @@ public class UploadActivity extends Activity {
 		mImageURLTextView.setText(url != null ? url.toString() : "nothing!");
 
 		if (url != null) {
-			imageURL = url.toString();
+			mImageURL = url.toString();
 
 			mCopyButton.setEnabled(true);
 			mShareButton.setEnabled(true);
-
-			mUploadId = storeUpload();
 		}
 	}
 
@@ -305,9 +361,9 @@ public class UploadActivity extends Activity {
 
 	private void resetGUI() {
 		mProgress.setVisibility(ProgressBar.INVISIBLE);
-		mMimeTypeTextView.setText(mimeType);
-		mFilePathTextView.setText(filePath);
-		mImageURLTextView.setText(imageURL);
+		mMimeTypeTextView.setText(mMimeType);
+		mFilePathTextView.setText(mFilePath);
+		mImageURLTextView.setText(mImageURL);
 		mCopyButton.setEnabled(true);
 		mShareButton.setEnabled(true);
 	}
@@ -376,8 +432,4 @@ public class UploadActivity extends Activity {
 		}
 	}
 
-	protected long storeUpload() {
-		byte[] thumbnail = ImageProcessor.thumbnail(filePath, 100);
-		return mDbHelper.createUpload(imageURL, filePath, thumbnail, "");
-	}
 }
