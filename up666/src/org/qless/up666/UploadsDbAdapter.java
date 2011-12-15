@@ -180,6 +180,25 @@ public class UploadsDbAdapter {
 		return mCursor;
 
 	}
+	/**
+	 * Return a Cursor positioned at the upload that matches the given rowId
+	 * 
+	 * @param rowId
+	 *            id of upload to retrieve
+	 * @return String the url, null if not found
+	 */
+	public String[] fetchUploadUrlAndComment(long rowId) {
+
+		Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[] { KEY_ROWID, KEY_URL, KEY_COMMENT }, KEY_ROWID + "="
+				+ rowId, null, null, null, null, null);
+		if (mCursor != null) {
+			mCursor.moveToFirst();
+			return new String[] {mCursor.getString(mCursor.getColumnIndex(KEY_URL)),
+					mCursor.getString(mCursor.getColumnIndex(KEY_COMMENT))};
+		}
+		return null;
+
+	}
 
 	/**
 	 * Update the upload using the details provided. The upload to be updated is specified using the

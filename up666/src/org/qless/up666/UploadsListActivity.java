@@ -22,14 +22,18 @@
 package org.qless.up666;
 
 import android.app.ListActivity;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.ClipboardManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 public class UploadsListActivity extends ListActivity {
 	public static final int MENU_CAMERA_ID = Menu.FIRST;
@@ -70,6 +74,25 @@ public class UploadsListActivity extends ListActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		super.onListItemClick(l, v, position, id);
+		String[] urlComment = mDbHelper.fetchUploadUrlAndComment(id);
+		if (urlComment != null) {
+			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+			clipboard.setText(urlComment[0]);
+			Context context = getApplicationContext();
+			CharSequence text = getString(R.string.copyToast);
+			int duration = Toast.LENGTH_SHORT;
+			Toast toast = Toast.makeText(context, text, duration);
+			toast.show();
+		}
+		// TODO: copy to clipboard.
+		// Intent i = new Intent(this, NoteEdit.class);
+		// i.putExtra(NotesDbAdapter.KEY_ROWID, id);
+		// startActivityForResult(i, ACTIVITY_EDIT);
 	}
 
 	private void fillData() {
