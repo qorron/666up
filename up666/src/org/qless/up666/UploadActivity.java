@@ -44,6 +44,7 @@ import android.text.ClipboardManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -73,6 +74,7 @@ public class UploadActivity extends Activity {
 	private UploadsDbAdapter mDbHelper;
 	@SuppressWarnings("unused")
 	private Error error;
+	private long mUploadId = -1;
 
 	public enum Error {
 		FILE_NOT_FOUND, HOST_NOT_FOUND, NETWORK, BAD_URL, BAD_INTENT
@@ -94,6 +96,7 @@ public class UploadActivity extends Activity {
 			imageURL = savedInstanceState.getString("imageURL");
 			filePath = savedInstanceState.getString("filePath");
 			mimeType = savedInstanceState.getString("mimeType");
+			mUploadId = savedInstanceState.getLong("mUploadId");
 		}
 		Intent intent = getIntent();
 		setContentView(R.layout.upload);
@@ -191,11 +194,18 @@ public class UploadActivity extends Activity {
 	 * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
 	 */
 	protected void onSaveInstanceState(Bundle outState) {
+		if (-1 != mUploadId) {
+			EditText commentEditText = (EditText) findViewById(R.id.commentEditText);
+			mDbHelper.updateCommentOnUpload(mUploadId, commentEditText.getText().toString());
+		} 
+		
 		mDbHelper.close();
 		mDbHelper = null;
+		
 		outState.putString("imageURL", imageURL);
 		outState.putString("mimeType", mimeType);
 		outState.putString("filePath", filePath);
+		outState.putLong("mUploadId", mUploadId);
 	}
 
 	/**
@@ -212,7 +222,7 @@ public class UploadActivity extends Activity {
 			mCopyButton.setEnabled(true);
 			mShareButton.setEnabled(true);
 
-			storeUpload();
+			mUploadId = storeUpload();
 		}
 	}
 
@@ -368,6 +378,6 @@ public class UploadActivity extends Activity {
 
 	protected long storeUpload() {
 		byte[] thumbnail = ImageProcessor.thumbnail(filePath, 100);
-		return mDbHelper.createNote(imageURL, filePath, thumbnail, "");
+		return mDbHelper.createUpload(imageURL, filePath, thumbnail, "");
 	}
 }

@@ -27,6 +27,7 @@
                 android:id="@+id/headlineTextView"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:singleLine="true"
                 android:text="Medium Text"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
             

@@ -10,6 +10,16 @@
 		android:layout_height="wrap_content" android:text="@string/mimeType" />
 	<TextView android:id="@+id/imageURL" android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:text="@string/imageURL" />
+
+	<EditText
+	    android:id="@+id/commentEditText"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:hint="@string/hint_comment" >
+
+	    <requestFocus />
+	</EditText>
+
 	<LinearLayout android:layout_height="wrap_content"
 		android:layout_width="fill_parent" android:id="@+id/linearLayout1">
 		<Button android:text="@string/copy" android:id="@+id/buttonCopy"

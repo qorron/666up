@@ -126,7 +126,7 @@ public class UploadsDbAdapter {
 	 * @param comment
 	 * @return rowId or -1 if failed
 	 */
-	public long createNote(String url, String filename, byte[] thumbnail, String comment) {
+	public long createUpload(String url, String filename, byte[] thumbnail, String comment) {
 		ContentValues initialValues = new ContentValues();
 
 		initialValues.put(KEY_URL, url);
