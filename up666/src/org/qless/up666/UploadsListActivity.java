@@ -79,29 +79,26 @@ public class UploadsListActivity extends ListActivity {
 		startManagingCursor(c);
 
 		String[] from = new String[] { UploadsDbAdapter.KEY_COMMENT,
-				UploadsDbAdapter.KEY_UPLOAD_DATE,
-				UploadsDbAdapter.KEY_THUMBNAIL };
+				UploadsDbAdapter.KEY_UPLOAD_DATE, UploadsDbAdapter.KEY_THUMBNAIL };
 		int[] to = new int[] { R.id.headlineTextView, R.id.additionalTextView,
 				R.id.thumbnailImageView };
 
 		// Now create an array adapter and set it to display using our row
-		SimpleCursorAdapter uploads = new SimpleCursorAdapter(this,
-				R.layout.upload_row, c, from, to);
+		SimpleCursorAdapter uploads = new SimpleCursorAdapter(this, R.layout.upload_row, c, from,
+				to);
 
 		uploads.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
-			public boolean setViewValue(View view, Cursor cursor,
-					int columnIndex) {
-				if (columnIndex == cursor
-						.getColumnIndex(UploadsDbAdapter.KEY_THUMBNAIL)) {
+			public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+				if (columnIndex == cursor.getColumnIndex(UploadsDbAdapter.KEY_THUMBNAIL)) {
 
 					ImageView thumbnailImage = (ImageView) view;
 					byte[] image = cursor.getBlob(cursor
 							.getColumnIndex(UploadsDbAdapter.KEY_THUMBNAIL));
 					if (image != null) {
-					thumbnailImage.setImageBitmap(BitmapFactory
-							.decodeByteArray(image, 0, image.length));
+						thumbnailImage.setImageBitmap(BitmapFactory.decodeByteArray(image, 0,
+								image.length));
 					} else {
-						thumbnailImage.setImageResource( R.drawable.icon);
+						thumbnailImage.setImageResource(R.drawable.icon);
 					}
 
 					return true;

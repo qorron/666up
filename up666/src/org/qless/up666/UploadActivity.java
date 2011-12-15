@@ -73,8 +73,7 @@ public class UploadActivity extends Activity {
 	private UploadsDbAdapter mDbHelper;
 	@SuppressWarnings("unused")
 	private Error error;
-	
-	
+
 	public enum Error {
 		FILE_NOT_FOUND, HOST_NOT_FOUND, NETWORK, BAD_URL, BAD_INTENT
 	}
@@ -89,7 +88,7 @@ public class UploadActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		mDbHelper = new UploadsDbAdapter(this);
-        mDbHelper.open();
+		mDbHelper.open();
 
 		if (savedInstanceState != null) {
 			imageURL = savedInstanceState.getString("imageURL");
@@ -107,8 +106,7 @@ public class UploadActivity extends Activity {
 		mCopyButton = (Button) findViewById(R.id.buttonCopy);
 		mShareButton = (Button) findViewById(R.id.buttonShare);
 
-		mGreeting.setText(getString(R.string.uploadAt) + " "
-				+ getString(R.string.imageHoster));
+		mGreeting.setText(getString(R.string.uploadAt) + " " + getString(R.string.imageHoster));
 
 		mProgress.setVisibility(ProgressBar.INVISIBLE);
 		mCopyButton.setEnabled(false);
@@ -131,18 +129,17 @@ public class UploadActivity extends Activity {
 				// TODO Auto-generated method stub
 				Intent i = new Intent(android.content.Intent.ACTION_SEND);
 				i.setType("text/plain");
-				i.putExtra(Intent.EXTRA_SUBJECT,
-						getString(R.string.share_subject));
+				i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_subject));
 				i.putExtra(Intent.EXTRA_TEXT, imageURL);
-				startActivity(Intent.createChooser(i,
-						getString(R.string.share_title)));
+				startActivity(Intent.createChooser(i, getString(R.string.share_title)));
 
 			}
 
 		});
 
 		if (imageURL == null) {
-			// since there is no previously stored url, we have to upload the file
+			// since there is no previously stored url, we have to upload the
+			// file
 			if (Intent.ACTION_SEND.equals(intent.getAction())) {
 				Bundle extras = intent.getExtras();
 				if (extras.containsKey(Intent.EXTRA_STREAM)) {
@@ -154,11 +151,10 @@ public class UploadActivity extends Activity {
 					if (scheme.equals("content")) {
 						mimeType = intent.getType();
 						ContentResolver contentResolver = getContentResolver();
-						Cursor cursor = contentResolver.query(uri, null, null,
-								null, null);
+						Cursor cursor = contentResolver.query(uri, null, null, null, null);
 						cursor.moveToFirst();
-						filePath = cursor.getString(cursor
-								.getColumnIndexOrThrow(Images.Media.DATA));
+						filePath = cursor
+								.getString(cursor.getColumnIndexOrThrow(Images.Media.DATA));
 						ok = true;
 					} else if (scheme.equals("file")) {
 						mimeType = intent.getType();
@@ -182,7 +178,8 @@ public class UploadActivity extends Activity {
 				errorDialogue(null, Error.BAD_INTENT);
 			}
 		} else {
-			// we already have a url, so we just update the gui and make it look like expected.
+			// we already have a url, so we just update the gui and make it look
+			// like expected.
 			resetGUI();
 		}
 
@@ -201,9 +198,6 @@ public class UploadActivity extends Activity {
 		outState.putString("filePath", filePath);
 	}
 
-	
-		
-	
 	/**
 	 * Displays the image URL and enables the copy/share buttons
 	 * 
@@ -217,7 +211,7 @@ public class UploadActivity extends Activity {
 
 			mCopyButton.setEnabled(true);
 			mShareButton.setEnabled(true);
-			
+
 			storeUpload();
 		}
 	}
@@ -261,12 +255,11 @@ public class UploadActivity extends Activity {
 		}
 
 		if (ex != null) { // exception -> send error report
-			b.setPositiveButton(android.R.string.yes,
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface arg0, int arg1) {
-							sendError();
-						}
-					});
+			b.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface arg0, int arg1) {
+					sendError();
+				}
+			});
 			b.setNegativeButton(android.R.string.no, null);
 		} else { // just a normal error like network problems
 			// add a neutral button to the alert box and assign a click listener
@@ -284,34 +277,31 @@ public class UploadActivity extends Activity {
 		StringWriter sw = new StringWriter();
 		ex.printStackTrace(new PrintWriter(sw));
 		String stacktrace = sw.toString();
-	
+
 		// create an email intent to send to yourself
-		final Intent emailIntent = new Intent(
-				android.content.Intent.ACTION_SEND);
+		final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
 		emailIntent.setType("plain/text");
 		emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
 				new String[] { "android@qless.org" });
-		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-				getString(R.string.app_name) + " "
-						+ getString(R.string.errorSubject));
+		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.app_name)
+				+ " " + getString(R.string.errorSubject));
 		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, stacktrace);
-	
+
 		// start the email activity - note you need to start it
 		// with a chooser
-		startActivity(Intent.createChooser(emailIntent,
-				getString(R.string.errorSendAction)));
-	
+		startActivity(Intent.createChooser(emailIntent, getString(R.string.errorSendAction)));
+
 	}
 
-	private void resetGUI () {
+	private void resetGUI() {
 		mProgress.setVisibility(ProgressBar.INVISIBLE);
 		mMimeTypeTextView.setText(mimeType);
 		mFilePathTextView.setText(filePath);
 		mImageURLTextView.setText(imageURL);
 		mCopyButton.setEnabled(true);
 		mShareButton.setEnabled(true);
-		}
-	
+	}
+
 	/**
 	 * @author quattro
 	 * 
@@ -319,10 +309,10 @@ public class UploadActivity extends Activity {
 	 * 
 	 */
 	private class ImageUploadTask extends AsyncTask<String, Integer, URL> {
-	
+
 		private Exception ex;
 		private Error error;
-	
+
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -332,7 +322,7 @@ public class UploadActivity extends Activity {
 		protected void onPreExecute() {
 			mProgress.setVisibility(ProgressBar.VISIBLE);
 		}
-	
+
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -359,7 +349,7 @@ public class UploadActivity extends Activity {
 			}
 			return url;
 		}
-	
+
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -375,14 +365,9 @@ public class UploadActivity extends Activity {
 			}
 		}
 	}
-	
+
 	protected long storeUpload() {
 		byte[] thumbnail = ImageProcessor.thumbnail(filePath, 100);
-	    return mDbHelper.createNote(imageURL, filePath, thumbnail, "");
+		return mDbHelper.createNote(imageURL, filePath, thumbnail, "");
 	}
 }
-
-
-
-
-

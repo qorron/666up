@@ -21,7 +21,6 @@
 package org.qless.up666;
 
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.OutputStream;
 
 import android.graphics.Bitmap;
@@ -58,8 +57,8 @@ public class ImageProcessor {
 		ByteArrayOutputStream thumbnailStream = new ByteArrayOutputStream(bytes);
 		process(imagePath, thumbnailStream, size, true);
 
-		Log.i("ImageScale", "requwsted size: " + size + " projected bytes: "
-				+ bytes + " used bytes: " + thumbnailStream.size());
+		Log.i("ImageScale", "requwsted size: " + size + " projected bytes: " + bytes
+				+ " used bytes: " + thumbnailStream.size());
 
 		return thumbnailStream.toByteArray();
 	}
@@ -86,12 +85,11 @@ public class ImageProcessor {
 	 * @param maxPixel
 	 *            maximum pixels in one direction
 	 * @param strict
-	 *            set to true if the resulting image should have exactly this
-	 *            dimension
+	 *            set to true if the resulting image should have exactly this dimension
 	 * 
 	 */
-	public static void process(String imagePath,
-			OutputStream imageOutputStream, int maxPixel, boolean strict) {
+	public static void process(String imagePath, OutputStream imageOutputStream, int maxPixel,
+			boolean strict) {
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inJustDecodeBounds = true; // to get the size without actually
 											// loading the image into the
@@ -115,9 +113,8 @@ public class ImageProcessor {
 		}
 
 		double baseInSampleSize = 1;
-		Log.i("ImageScale", "maxPixelsForLoading: " + maxPixelsForLoading
-				+ " originalPixels: " + originalPixels + " baseInSampleSize: "
-				+ baseInSampleSize);
+		Log.i("ImageScale", "maxPixelsForLoading: " + maxPixelsForLoading + " originalPixels: "
+				+ originalPixels + " baseInSampleSize: " + baseInSampleSize);
 
 		for (; originalPixels > maxPixelsForLoading; originalPixels /= 4) {
 			baseInSampleSize *= 2;
@@ -128,9 +125,8 @@ public class ImageProcessor {
 		options.inJustDecodeBounds = false;
 		options.inSampleSize = (int) baseInSampleSize;
 
-		Log.i("ImageScale", "maxPixelsForLoading: " + maxPixelsForLoading
-				+ " originalPixels: " + originalPixels + " baseInSampleSize: "
-				+ baseInSampleSize);
+		Log.i("ImageScale", "maxPixelsForLoading: " + maxPixelsForLoading + " originalPixels: "
+				+ originalPixels + " baseInSampleSize: " + baseInSampleSize);
 
 		bitmapOrg = BitmapFactory.decodeFile(imagePath, options);
 
@@ -143,8 +139,7 @@ public class ImageProcessor {
 			float scaleHeight = 1;
 			scaleWidth = scaleHeight = ((float) maxPixels) / originalPixels;
 
-			Log.i("ImageScale", "width: " + width + " height: " + height
-					+ "scale: " + scaleWidth);
+			Log.i("ImageScale", "width: " + width + " height: " + height + "scale: " + scaleWidth);
 
 			// create a matrix for the manipulation
 			Matrix matrix = new Matrix();
@@ -154,14 +149,12 @@ public class ImageProcessor {
 			// matrix.postRotate(45);
 
 			// recreate the new Bitmap
-			Bitmap resizedBitmap = Bitmap.createBitmap(bitmapOrg, 0, 0, width,
-					height, matrix, true);
-			resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 90,
-					imageOutputStream);
+			Bitmap resizedBitmap = Bitmap
+					.createBitmap(bitmapOrg, 0, 0, width, height, matrix, true);
+			resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, imageOutputStream);
 
 		} else {
-			bitmapOrg.compress(Bitmap.CompressFormat.JPEG, 90,
-					imageOutputStream);
+			bitmapOrg.compress(Bitmap.CompressFormat.JPEG, 90, imageOutputStream);
 		}
 	}
 }
