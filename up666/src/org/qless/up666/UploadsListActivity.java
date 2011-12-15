@@ -23,62 +23,98 @@ package org.qless.up666;
 
 import android.app.ListActivity;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 
 public class UploadsListActivity extends ListActivity {
 	public static final int MENU_CAMERA_ID = Menu.FIRST;
 	public static final int MENU_PREFERENCES_ID = Menu.FIRST + 1;
 	public static final int MENU_ABOUT_ID = Menu.FIRST + 2;
-	
-	private int mUploadNumber = 1;
+
 	private UploadsDbAdapter mDbHelper;
-	
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.uploads_list);
-        mDbHelper = new UploadsDbAdapter(this);
-        mDbHelper.open();
-        fillData();
-    }
-	
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-    	boolean result = super.onCreateOptionsMenu(menu);
-    	
-        menu.add(0, MENU_CAMERA_ID, 1, R.string.menu_camera).setIcon(android.R.drawable.ic_menu_camera);
-        menu.add(0, MENU_ABOUT_ID, 2, R.string.menu_about).setIcon(android.R.drawable.ic_menu_info_details);
-        menu.add(0, MENU_PREFERENCES_ID, 3, R.string.menu_preferences).setIcon(android.R.drawable.ic_menu_preferences);
-    
-        return result;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-    	switch (item.getItemId()) {
-        case MENU_CAMERA_ID:
-            //createNote();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-    
-    private void fillData() {
-        // Get all of the notes from the database and create the item list
-        Cursor c = mDbHelper.fetchAllUploads();
-        startManagingCursor(c);
+	/** Called when the activity is first created. */
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.uploads_list);
+		mDbHelper = new UploadsDbAdapter(this);
+		mDbHelper.open();
+		fillData();
+	}
 
-        String[] from = new String[] { UploadsDbAdapter.KEY_COMMENT, UploadsDbAdapter.KEY_UPLOAD_DATE };
-        int[] to = new int[] { R.id.headlineTextView, R.id.additionalTextView };
-        
-        // Now create an array adapter and set it to display using our row
-        SimpleCursorAdapter notes =
-            new SimpleCursorAdapter(this, R.layout.upload_row, c, from, to);
-        setListAdapter(notes);
-    }
-	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		boolean result = super.onCreateOptionsMenu(menu);
+
+		menu.add(0, MENU_CAMERA_ID, 1, R.string.menu_camera).setIcon(
+				android.R.drawable.ic_menu_camera);
+		menu.add(0, MENU_ABOUT_ID, 2, R.string.menu_about).setIcon(
+				android.R.drawable.ic_menu_info_details);
+		menu.add(0, MENU_PREFERENCES_ID, 3, R.string.menu_preferences).setIcon(
+				android.R.drawable.ic_menu_preferences);
+
+		return result;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case MENU_CAMERA_ID:
+			// createNote();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+	private void fillData() {
+		// Get all of the notes from the database and create the item list
+		Cursor c = mDbHelper.fetchAllUploads();
+
+		startManagingCursor(c);
+
+		String[] from = new String[] { UploadsDbAdapter.KEY_COMMENT,
+				UploadsDbAdapter.KEY_UPLOAD_DATE,
+				UploadsDbAdapter.KEY_THUMBNAIL };
+		int[] to = new int[] { R.id.headlineTextView, R.id.additionalTextView,
+				R.id.thumbnailImageView };
+
+		// Now create an array adapter and set it to display using our row
+		SimpleCursorAdapter uploads = new SimpleCursorAdapter(this,
+				R.layout.upload_row, c, from, to);
+
+		uploads.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+			public boolean setViewValue(View view, Cursor cursor,
+					int columnIndex) {
+				if (columnIndex == cursor
+						.getColumnIndex(UploadsDbAdapter.KEY_THUMBNAIL)) {
+
+					ImageView thumbnailImage = (ImageView) view;
+					byte[] image = cursor.getBlob(cursor
+							.getColumnIndex(UploadsDbAdapter.KEY_THUMBNAIL));
+					if (image != null) {
+					thumbnailImage.setImageBitmap(BitmapFactory
+							.decodeByteArray(image, 0, image.length));
+					} else {
+						thumbnailImage.setImageResource( R.drawable.icon);
+					}
+
+					return true;
+				}
+				return false;
+			}
+		});
+
+		setListAdapter(uploads);
+
+		// mListAdapter = new MyAdapter(this, c);
+		// setListAdapter(mListAdapter);
+
+	}
+
 }

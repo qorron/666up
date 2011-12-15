@@ -67,11 +67,12 @@ public class UploadActivity extends Activity {
 	private String imageURL;
 
 	private Exception ex;
-	private Error error;
 	private String mimeType;
 	private String filePath;
 
 	private UploadsDbAdapter mDbHelper;
+	@SuppressWarnings("unused")
+	private Error error;
 	
 	
 	public enum Error {
@@ -376,6 +377,12 @@ public class UploadActivity extends Activity {
 	}
 	
 	protected long storeUpload() {
-	    return mDbHelper.createNote(imageURL, filePath, null, "");
+		byte[] thumbnail = ImageProcessor.thumbnail(filePath, 100);
+	    return mDbHelper.createNote(imageURL, filePath, thumbnail, "");
 	}
 }
+
+
+
+
+
