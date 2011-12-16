@@ -218,15 +218,17 @@ public class UploadActivity extends Activity {
 	 * otherwise an entry (with thumbnail) will be generated and stored.
 	 */
 	private void saveState() {
-		if (-1 == mUploadId) {
-			// has never been saved to the db
-			Log.d("database", "stored new upload");
-			byte[] thumbnail = ImageProcessor.thumbnail(mFilePath, 100);
-			mUploadId = mDbHelper.createUpload(mImageURL, mFilePath, thumbnail, mComment);
-		} else {
-			// has been saved, just update the comment
-			mDbHelper.updateCommentOnUpload(mUploadId, mComment);
-			Log.d("database", "update comment");
+		if (mImageURL != null) {
+			if (-1 == mUploadId) {
+				// has never been saved to the db
+				Log.d("database", "stored new upload");
+				byte[] thumbnail = ImageProcessor.thumbnail(mFilePath, 100);
+				mUploadId = mDbHelper.createUpload(mImageURL, mFilePath, thumbnail, mComment);
+			} else {
+				// has been saved, just update the comment
+				mDbHelper.updateCommentOnUpload(mUploadId, mComment);
+				Log.d("database", "update comment");
+			}
 		}
 	}
 
@@ -263,7 +265,7 @@ public class UploadActivity extends Activity {
 			mDbHelper = new UploadsDbAdapter(this);
 			mDbHelper.open();
 		}
-		//resetGUI();
+		// resetGUI();
 	}
 
 	/**
