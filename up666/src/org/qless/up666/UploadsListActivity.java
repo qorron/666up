@@ -33,22 +33,28 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.ClipboardManager;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 /**
- * @author quattro
- * Main activity, displays a list of previously uploaded images
+ * @author quattro Main activity, displays a list of previously uploaded images
  */
 public class UploadsListActivity extends ListActivity {
 	public static final int MENU_CAMERA_ID = Menu.FIRST;
 	public static final int MENU_PREFERENCES_ID = Menu.FIRST + 1;
 	public static final int MENU_ABOUT_ID = Menu.FIRST + 2;
+	public static final int MENU_EDIT_ID = Menu.FIRST + 3;
+	public static final int MENU_SEE_ORIGINAL_ID = Menu.FIRST + 4;
+	public static final int MENU_DELETE_ID = Menu.FIRST + 5;
+	public static final int MENU_SHARE_ID = Menu.FIRST + 6;
 
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 0;
 	private Uri imageUri;
@@ -67,9 +73,12 @@ public class UploadsListActivity extends ListActivity {
 		mDbHelper = new UploadsDbAdapter(this);
 		mDbHelper.open();
 		fillData();
+		registerForContextMenu(getListView());
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
 	 */
 	@Override
@@ -86,7 +95,9 @@ public class UploadsListActivity extends ListActivity {
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
 	 */
 	@Override
@@ -102,8 +113,11 @@ public class UploadsListActivity extends ListActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	/* (non-Javadoc)
-	 * @see android.app.ListActivity#onListItemClick(android.widget.ListView, android.view.View, int, long)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.ListActivity#onListItemClick(android.widget.ListView, android.view.View,
+	 * int, long)
 	 */
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -120,7 +134,51 @@ public class UploadsListActivity extends ListActivity {
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Activity#onCreateContextMenu(android.view.ContextMenu, android.view.View,
+	 * android.view.ContextMenu.ContextMenuInfo)
+	 */
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		menu.add(0, MENU_SHARE_ID, 0, R.string.share);
+		//menu.add(0, MENU_EDIT_ID, 1, R.string.menu_edit);
+		//menu.add(0, MENU_SEE_ORIGINAL_ID, 2, R.string.menu_see_original);
+		menu.add(0, MENU_DELETE_ID, 3, R.string.menu_delete);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Activity#onContextItemSelected(android.view.MenuItem)
+	 */
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		switch (item.getItemId()) {
+		case MENU_SHARE_ID:
+			Intent i = new Intent(android.content.Intent.ACTION_SEND);
+			String[] urlComment = mDbHelper.fetchUploadUrlAndComment(info.id);
+			i.setType("text/plain");
+			i.putExtra(Intent.EXTRA_SUBJECT,
+					urlComment[1].equals("") ? getString(R.string.share_subject) : urlComment[1]);
+			i.putExtra(Intent.EXTRA_TEXT, urlComment[0]);
+			startActivity(Intent.createChooser(i, getString(R.string.share_title)));
+			return true;
+
+		case MENU_DELETE_ID:
+			mDbHelper.deleteUpload(info.id);
+			fillData();
+			return true;
+		}
+		return super.onContextItemSelected(item);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
 	 */
 	protected void onSaveInstanceState(Bundle outState) {
@@ -131,7 +189,7 @@ public class UploadsListActivity extends ListActivity {
 	 * reads out all uploads from the database and fills the list
 	 */
 	private void fillData() {
-		// Get all of the notes from the database and create the item list
+		// Get all of the uploads from the database and create the item list
 		Cursor c = mDbHelper.fetchAllUploads();
 
 		startManagingCursor(c);
@@ -190,7 +248,9 @@ public class UploadsListActivity extends ListActivity {
 		startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
 	 */
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -43,7 +43,10 @@
     <string name="menu_camera">Camera</string>
     <string name="menu_about">About</string>
     <string name="menu_preferences">Preferences</string>
-    
+    <string name="menu_edit">Edit</string>
+    <string name="menu_see_original">Show original</string>
+    <string name="menu_delete">Delete</string>
+   
     <string name="hint_comment">Comment...</string>
 
     <string name="copyToast">URL copied</string>
