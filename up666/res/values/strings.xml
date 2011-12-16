@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">666up!</string>
     <string name="imageURL">http://666kb.com</string>
     <string name="imageHoster">http://666kb.com</string>
-            
+        
+    <string name="app_name">666up!</string>
+        
     <string name="mimeType">No mime type</string>
     
     <string name="filePath">No file</string>
