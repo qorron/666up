@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2011 qorron
  * Contact: https://github.com/qorron
  * 
@@ -32,7 +32,7 @@ import android.util.Log;
 /**
  * @author quattro
  * 
- *         Simple notes database access helper class. Defines the basic CRUD operations for the
+ *         Simple uploads database access helper class. Defines the basic CRUD operations for the
  *         666kb uploads, and gives the ability to list all uploads as well as retrieve or modify a
  *         specific upload.
  * 
@@ -112,6 +112,9 @@ public class UploadsDbAdapter {
 		return this;
 	}
 
+	/**
+	 * close the database
+	 */
 	public void close() {
 		mDbHelper.close();
 	}
@@ -120,10 +123,10 @@ public class UploadsDbAdapter {
 	 * Create a new upload entry using the data provided. If the upload is successfully created
 	 * return the new rowId for that instance, otherwise return a -1 to indicate failure.
 	 * 
-	 * @param url
-	 * @param filename
-	 * @param thumbnail
-	 * @param comment
+	 * @param url the url of the uploaded image
+	 * @param filename the original filename including the full path
+	 * @param thumbnail a thumbnail of the imabe
+	 * @param comment user generated information about the image
 	 * @return rowId or -1 if failed
 	 */
 	public long createUpload(String url, String filename, byte[] thumbnail, String comment) {
@@ -181,11 +184,11 @@ public class UploadsDbAdapter {
 
 	}
 	/**
-	 * Return a Cursor positioned at the upload that matches the given rowId
+	 * Return url and comment for the upload that matches the given rowId
 	 * 
 	 * @param rowId
 	 *            id of upload to retrieve
-	 * @return String the url, null if not found
+	 * @return  the url and the comment, null if not found
 	 */
 	public String[] fetchUploadUrlAndComment(long rowId) {
 
@@ -201,8 +204,8 @@ public class UploadsDbAdapter {
 	}
 
 	/**
-	 * Update the upload using the details provided. The upload to be updated is specified using the
-	 * rowId, and it is altered to use the comment values passed in
+	 * Update the upload using the comment provided. The upload to be updated is specified using the
+	 * rowId, and it is altered to use the comment value passed in
 	 * 
 	 * @param rowId
 	 *            id of upload to update

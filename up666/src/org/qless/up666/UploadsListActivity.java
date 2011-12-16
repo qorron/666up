@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2011 qorron
  * Contact: https://github.com/qorron
  * 
@@ -41,6 +41,10 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
+/**
+ * @author quattro
+ * Main activity, displays a list of previously uploaded images
+ */
 public class UploadsListActivity extends ListActivity {
 	public static final int MENU_CAMERA_ID = Menu.FIRST;
 	public static final int MENU_PREFERENCES_ID = Menu.FIRST + 1;
@@ -65,6 +69,9 @@ public class UploadsListActivity extends ListActivity {
 		fillData();
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
@@ -79,6 +86,9 @@ public class UploadsListActivity extends ListActivity {
 		return result;
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -92,6 +102,9 @@ public class UploadsListActivity extends ListActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.ListActivity#onListItemClick(android.widget.ListView, android.view.View, int, long)
+	 */
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
@@ -105,16 +118,18 @@ public class UploadsListActivity extends ListActivity {
 			Toast toast = Toast.makeText(context, text, duration);
 			toast.show();
 		}
-		// TODO: copy to clipboard.
-		// Intent i = new Intent(this, NoteEdit.class);
-		// i.putExtra(NotesDbAdapter.KEY_ROWID, id);
-		// startActivityForResult(i, ACTIVITY_EDIT);
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
+	 */
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putParcelable("uri", imageUri);
 	}
 
+	/**
+	 * reads out all uploads from the database and fills the list
+	 */
 	private void fillData() {
 		// Get all of the notes from the database and create the item list
 		Cursor c = mDbHelper.fetchAllUploads();
@@ -151,12 +166,11 @@ public class UploadsListActivity extends ListActivity {
 		});
 
 		setListAdapter(uploads);
-
-		// mListAdapter = new MyAdapter(this, c);
-		// setListAdapter(mListAdapter);
-
 	}
 
+	/**
+	 * launch the camera to take a picture for immediate upload
+	 */
 	private void startCameraIntent() {
 		// define the file-name to save photo taken by Camera activity
 		String fileName = "new-photo-name.jpg";
@@ -176,6 +190,9 @@ public class UploadsListActivity extends ListActivity {
 		startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
+	 */
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
 			if (resultCode == RESULT_OK) {
@@ -201,6 +218,9 @@ public class UploadsListActivity extends ListActivity {
 		}
 	}
 
+	/**
+	 * shows a dialog with information about the program
+	 */
 	private void showAbout() {
 		final AlertDialog.Builder b = new AlertDialog.Builder(this);
 		b.setIcon(android.R.drawable.ic_dialog_info);

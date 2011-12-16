@@ -57,10 +57,6 @@ import android.widget.Toast;
  *         This activity handles the send intent for images.
  * 
  */
-/**
- * @author quattro
- * 
- */
 public class UploadActivity extends Activity {
 
 	private TextView mMimeTypeTextView;
@@ -85,10 +81,12 @@ public class UploadActivity extends Activity {
 		FILE_NOT_FOUND, HOST_NOT_FOUND, NETWORK, BAD_URL, BAD_INTENT
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Gets called when the activity is (re)created.
 	 * 
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
+	 * 
+	 * @param savedInstanceState The previously saved instance data containing: url, file path, mime-type, row id and image comment
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -125,19 +123,19 @@ public class UploadActivity extends Activity {
 		mCommentEditText.addTextChangedListener(new TextWatcher() {
 
 			public void afterTextChanged(Editable s) {
-				// XXX do something
 				mComment = s.toString();
 			}
 
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-				// XXX do something
+				// nothing to do
 			}
 
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				// XXX do something
+				// nothing to do
 			}
 		});
 
+		// Button to copy the url to the clipboard
 		mCopyButton.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
 				ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
@@ -150,9 +148,9 @@ public class UploadActivity extends Activity {
 			}
 		});
 
+		// Button to share the image url
 		mShareButton.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				Intent i = new Intent(android.content.Intent.ACTION_SEND);
 				i.setType("text/plain");
 				i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_subject));
@@ -230,8 +228,8 @@ public class UploadActivity extends Activity {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * creates or updates the entry in the database and saves the state information
 	 * 
 	 * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
 	 */
@@ -246,6 +244,11 @@ public class UploadActivity extends Activity {
 		outState.putString("mComment", mComment);
 	}
 
+	
+	
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onPause()
+	 */
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -256,6 +259,9 @@ public class UploadActivity extends Activity {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onResume()
+	 */
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -358,6 +364,9 @@ public class UploadActivity extends Activity {
 
 	}
 
+	/**
+	 *  displays the values we have and enables the buttons
+	 */
 	private void resetGUI() {
 		mProgress.setVisibility(ProgressBar.INVISIBLE);
 		mMimeTypeTextView.setText(mMimeType);
@@ -368,10 +377,7 @@ public class UploadActivity extends Activity {
 	}
 
 	/**
-	 * @author quattro
-	 * 
-	 *         handles the resize and upload process in a background thread
-	 * 
+	 * handles the resize and upload process in a background thread
 	 */
 	private class ImageUploadTask extends AsyncTask<String, Integer, URL> {
 
