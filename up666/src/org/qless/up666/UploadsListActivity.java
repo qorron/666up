@@ -21,12 +21,18 @@
 
 package org.qless.up666;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.ClipboardManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,12 +46,19 @@ public class UploadsListActivity extends ListActivity {
 	public static final int MENU_PREFERENCES_ID = Menu.FIRST + 1;
 	public static final int MENU_ABOUT_ID = Menu.FIRST + 2;
 
+	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 0;
+	private Uri imageUri;
+
 	private UploadsDbAdapter mDbHelper;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if (savedInstanceState != null) {
+			imageUri = savedInstanceState.getParcelable("uri");
+		}
+
 		setContentView(R.layout.uploads_list);
 		mDbHelper = new UploadsDbAdapter(this);
 		mDbHelper.open();
@@ -70,7 +83,10 @@ public class UploadsListActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case MENU_CAMERA_ID:
-			// createNote();
+			startCameraIntent();
+			return true;
+		case MENU_ABOUT_ID:
+			showAbout();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -93,6 +109,10 @@ public class UploadsListActivity extends ListActivity {
 		// Intent i = new Intent(this, NoteEdit.class);
 		// i.putExtra(NotesDbAdapter.KEY_ROWID, id);
 		// startActivityForResult(i, ACTIVITY_EDIT);
+	}
+
+	protected void onSaveInstanceState(Bundle outState) {
+		outState.putParcelable("uri", imageUri);
 	}
 
 	private void fillData() {
@@ -121,7 +141,7 @@ public class UploadsListActivity extends ListActivity {
 						thumbnailImage.setImageBitmap(BitmapFactory.decodeByteArray(image, 0,
 								image.length));
 					} else {
-						thumbnailImage.setImageResource(R.drawable.icon);
+						thumbnailImage.setImageResource(android.R.drawable.ic_menu_gallery);
 					}
 
 					return true;
@@ -135,6 +155,59 @@ public class UploadsListActivity extends ListActivity {
 		// mListAdapter = new MyAdapter(this, c);
 		// setListAdapter(mListAdapter);
 
+	}
+
+	private void startCameraIntent() {
+		// define the file-name to save photo taken by Camera activity
+		String fileName = "new-photo-name.jpg";
+		// create parameters for Intent with filename
+		ContentValues values = new ContentValues();
+		values.put(MediaStore.Images.Media.TITLE, fileName);
+		values.put(MediaStore.Images.Media.DESCRIPTION, "Image capture by camera");
+		// imageUri is the current activity attribute, define and save it for
+		// later usage (also in onSaveInstanceState)
+		imageUri = getContentResolver()
+				.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+		// create new Intent
+		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+		intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+
+		startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+	}
+
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+			if (resultCode == RESULT_OK) {
+
+				if (imageUri == null) {
+					Log.d("imageUri", "null!");
+				} else {
+
+					// use imageUri here to access the image
+					Bundle b = new Bundle();
+					b.putParcelable(Intent.EXTRA_STREAM, imageUri);
+					Intent i = new Intent(this, UploadActivity.class);
+					i.putExtras(b);
+					i.setAction(Intent.ACTION_SEND);
+					startActivity(i);
+				}
+
+			} else if (resultCode == RESULT_CANCELED) {
+				Toast.makeText(this, getString(R.string.noPhotoToast), Toast.LENGTH_SHORT);
+			} else {
+				Toast.makeText(this, getString(R.string.noPhotoToast), Toast.LENGTH_SHORT);
+			}
+		}
+	}
+
+	private void showAbout() {
+		final AlertDialog.Builder b = new AlertDialog.Builder(this);
+		b.setIcon(android.R.drawable.ic_dialog_info);
+		b.setTitle(R.string.introductionTitle);
+		b.setMessage(R.string.introductionBody);
+		b.setNeutralButton("Ok", null);
+		b.show();
 	}
 
 }
