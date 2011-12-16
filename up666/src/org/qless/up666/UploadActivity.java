@@ -79,8 +79,6 @@ public class UploadActivity extends Activity {
 	private String mComment;
 
 	private UploadsDbAdapter mDbHelper;
-	@SuppressWarnings("unused")
-	private Error error;
 	private EditText mCommentEditText;
 
 	public enum Error {
@@ -291,7 +289,6 @@ public class UploadActivity extends Activity {
 	 */
 	protected void errorDialogue(Exception ex, Error error) {
 		this.ex = ex;
-		this.error = error;
 		final AlertDialog.Builder b = new AlertDialog.Builder(this);
 		b.setIcon(android.R.drawable.ic_dialog_alert);
 
