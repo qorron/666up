@@ -29,4 +29,15 @@
     
     <string name="errorSendAction">Fehlerbericht senden...</string>
     <string name="errorSubject">Fehlerbericht</string>
+    
+    <string name="no_uploads">Keine hochgeladenen Bilder gespeichert</string>
+    <string name="menu_camera">Kamera</string>
+    <string name="menu_about">Über</string>
+    <string name="menu_preferences">Einstellungen</string>
+    <string name="hint_comment">Beschreibung...</string>
+    <string name="noPhotoToast">Kein Bild aufgenommen</string>
+        
+        
+        
+        
 </resources>
