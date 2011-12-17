@@ -7,13 +7,14 @@
 
         <ImageView
             android:id="@+id/thumbnailImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:adjustViewBounds="true"
             android:cropToPadding="true"
             android:maxHeight="40dp"
             android:maxWidth="40dp"
             android:paddingRight="3dp"
+            android:paddingLeft="3dp"
             android:scaleType="centerCrop"
             android:src="@drawable/icon" />
  
