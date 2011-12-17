@@ -16,7 +16,8 @@
             android:paddingRight="3dp"
             android:paddingLeft="3dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/icon" />
+            android:src="@drawable/icon"
+            android:contentDescription="@string/descThumbnail" />
  
         <LinearLayout
             android:id="@+id/rowDescriptionLinearLayout"
@@ -29,14 +30,14 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:text="Medium Text"
+                android:text="@string/devMediumText"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
             
             <TextView
                 android:id="@+id/additionalTextView"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Small Text"
+                android:text="@string/devSmallText"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </LinearLayout>
 

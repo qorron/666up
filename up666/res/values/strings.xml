@@ -2,7 +2,9 @@
 <resources>
     <string name="imageURL">http://666kb.com</string>
     <string name="imageHoster">http://666kb.com</string>
-        
+    <string name="devMediumText">Medium Text</string>
+    <string name="devSmallText">Small Text</string>
+    
     <string name="app_name">666up!</string>
         
     <string name="mimeType">No mime type</string>
@@ -35,7 +37,7 @@
     <string name="errorTitle">Unexpected Error</string>
     <string name="errorMessage">Something went wrong. Please, just try again and if the error persists you could help me fix it by sending me an error report.\n\nSend an error report now?</string>
 
-    <string name="errorSendAction">Send error report...</string>
+    <string name="errorSendAction">Send error report…</string>
     <string name="errorSubject">Error Report</string>
     
     <string name="no_uploads">There are no uploads stored in the database</string>
@@ -47,10 +49,12 @@
     <string name="menu_see_original">Show original</string>
     <string name="menu_delete">Delete</string>
    
-    <string name="hint_comment">Comment...</string>
+    <string name="hint_comment">Comment…</string>
 
     <string name="copyToast">URL copied</string>
     <string name="noPhotoToast">Picture was not taken</string>
-        
-                
+    
+    <string name="descThumbnail">Vorschau</string>
+    
+    
 </resources>

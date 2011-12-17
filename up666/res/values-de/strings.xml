@@ -27,15 +27,17 @@
     <string name="errorTitle">Unerwarteter Fehler</string>
     <string name="errorMessage">Irgendetwas lief schief. Wenn der Fehler weiterhin besteht kannst du helfen den Fehler zu beheben, indem du einen Fehlerbericht sendest.\n\nFehlerbericht jetzt senden?</string>
     
-    <string name="errorSendAction">Fehlerbericht senden...</string>
+    <string name="errorSendAction">Fehlerbericht senden…</string>
     <string name="errorSubject">Fehlerbericht</string>
     
     <string name="no_uploads">Keine hochgeladenen Bilder gespeichert</string>
     <string name="menu_camera">Kamera</string>
     <string name="menu_about">Über</string>
     <string name="menu_preferences">Einstellungen</string>
-    <string name="hint_comment">Beschreibung...</string>
+    <string name="hint_comment">Beschreibung…</string>
     <string name="noPhotoToast">Kein Bild aufgenommen</string>
+    
+    <string name="descThumbnail">Thumbnail</string>
         
         
         
