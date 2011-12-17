@@ -21,6 +21,8 @@
 
 package org.qless.up666;
 
+import java.io.File;
+
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.ContentValues;
@@ -56,7 +58,8 @@ public class UploadsListActivity extends ListActivity {
 	public static final int MENU_DELETE_ID = Menu.FIRST + 5;
 	public static final int MENU_SHARE_ID = Menu.FIRST + 6;
 
-	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 0;
+	private static final int ACTIVITY_CAPTURE_IMAGE = 0;
+	private static final int ACTIVITY_EDIT = 1;
 	private Uri imageUri;
 
 	private UploadsDbAdapter mDbHelper;
@@ -144,8 +147,8 @@ public class UploadsListActivity extends ListActivity {
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		menu.add(0, MENU_SHARE_ID, 0, R.string.share);
-		//menu.add(0, MENU_EDIT_ID, 1, R.string.menu_edit);
-		//menu.add(0, MENU_SEE_ORIGINAL_ID, 2, R.string.menu_see_original);
+		menu.add(0, MENU_EDIT_ID, 1, R.string.menu_edit);
+		menu.add(0, MENU_SEE_ORIGINAL_ID, 2, R.string.menu_see_original);
 		menu.add(0, MENU_DELETE_ID, 3, R.string.menu_delete);
 	}
 
@@ -157,17 +160,40 @@ public class UploadsListActivity extends ListActivity {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		Intent i;
+		Cursor upload = mDbHelper.fetchUpload(info.id);
+		startManagingCursor(upload);
+
 		switch (item.getItemId()) {
 		case MENU_SHARE_ID:
-			Intent i = new Intent(android.content.Intent.ACTION_SEND);
-			String[] urlComment = mDbHelper.fetchUploadUrlAndComment(info.id);
+			i = new Intent(android.content.Intent.ACTION_SEND);
 			i.setType("text/plain");
-			i.putExtra(Intent.EXTRA_SUBJECT,
-					urlComment[1].equals("") ? getString(R.string.share_subject) : urlComment[1]);
-			i.putExtra(Intent.EXTRA_TEXT, urlComment[0]);
+			i.putExtra(
+					Intent.EXTRA_SUBJECT,
+					upload.getString(upload.getColumnIndex(UploadsDbAdapter.KEY_COMMENT))
+							.equals("") ? getString(R.string.share_subject) : upload
+							.getString(upload.getColumnIndex(UploadsDbAdapter.KEY_COMMENT)));
+			i.putExtra(Intent.EXTRA_TEXT,
+					upload.getString(upload.getColumnIndex(UploadsDbAdapter.KEY_URL)));
 			startActivity(Intent.createChooser(i, getString(R.string.share_title)));
 			return true;
 
+		case MENU_SEE_ORIGINAL_ID:
+			i = new Intent(android.content.Intent.ACTION_VIEW);
+			File file = new File(upload.getString(upload
+					.getColumnIndex(UploadsDbAdapter.KEY_FILENAME)));
+			i.setDataAndType(
+					Uri.fromFile(file),
+					upload.getString(upload.getColumnIndex(UploadsDbAdapter.KEY_MIMETYPE)) != null ? upload
+							.getString(upload.getColumnIndex(UploadsDbAdapter.KEY_MIMETYPE))
+							: "image/*");
+			startActivity(i);
+			return true;
+		case MENU_EDIT_ID:
+			i = new Intent(this, UploadEdit.class);
+			i.putExtra(UploadsDbAdapter.KEY_ROWID, info.id);
+			startActivityForResult(i, ACTIVITY_EDIT);
+			return true;
 		case MENU_DELETE_ID:
 			mDbHelper.deleteUpload(info.id);
 			fillData();
@@ -245,7 +271,7 @@ public class UploadsListActivity extends ListActivity {
 		intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
 		intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
 
-		startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+		startActivityForResult(intent, ACTIVITY_CAPTURE_IMAGE);
 	}
 
 	/*
@@ -254,7 +280,10 @@ public class UploadsListActivity extends ListActivity {
 	 * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
 	 */
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+		case ACTIVITY_CAPTURE_IMAGE:
+
 			if (resultCode == RESULT_OK) {
 
 				if (imageUri == null) {
@@ -275,6 +304,11 @@ public class UploadsListActivity extends ListActivity {
 			} else {
 				Toast.makeText(this, getString(R.string.noPhotoToast), Toast.LENGTH_SHORT);
 			}
+			return;
+		case ACTIVITY_EDIT:
+
+			fillData();
+			return;
 		}
 	}
 

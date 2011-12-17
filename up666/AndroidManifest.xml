@@ -22,5 +22,6 @@
 				<data android:mimeType="image/*" />
 			</intent-filter>
 		</activity>
+		<activity android:name=".UploadEdit" />
 	</application>
 </manifest>
