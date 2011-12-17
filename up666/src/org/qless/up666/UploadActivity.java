@@ -86,7 +86,9 @@ public class UploadActivity extends Activity {
 	 * 
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 * 
-	 * @param savedInstanceState The previously saved instance data containing: url, file path, mime-type, row id and image comment
+	 * @param savedInstanceState
+	 *            The previously saved instance data containing: url, file path, mime-type, row id
+	 *            and image comment
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -219,7 +221,8 @@ public class UploadActivity extends Activity {
 				// has never been saved to the db
 				Log.d("database", "stored new upload");
 				byte[] thumbnail = ImageProcessor.thumbnail(mFilePath, 100);
-				mUploadId = mDbHelper.createUpload(mImageURL, mFilePath, thumbnail, mComment);
+				mUploadId = mDbHelper.createUpload(mImageURL, mFilePath, mMimeType, thumbnail,
+						mComment);
 			} else {
 				// has been saved, just update the comment
 				mDbHelper.updateCommentOnUpload(mUploadId, mComment);
@@ -244,9 +247,9 @@ public class UploadActivity extends Activity {
 		outState.putString("mComment", mComment);
 	}
 
-	
-	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onPause()
 	 */
 	@Override
@@ -259,7 +262,9 @@ public class UploadActivity extends Activity {
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onResume()
 	 */
 	@Override
@@ -365,7 +370,7 @@ public class UploadActivity extends Activity {
 	}
 
 	/**
-	 *  displays the values we have and enables the buttons
+	 * displays the values we have and enables the buttons
 	 */
 	private void resetGUI() {
 		mProgress.setVisibility(ProgressBar.INVISIBLE);
