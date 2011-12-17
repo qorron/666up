@@ -45,6 +45,7 @@ public class UploadsDbAdapter {
 	public static final String KEY_ROWID = "_id";
 	public static final String KEY_URL = "url";
 	public static final String KEY_FILENAME = "filename";
+	public static final String KEY_MIMETYPE = "mimetype";
 	public static final String KEY_THUMBNAIL = "thumbnail";
 	public static final String KEY_UPLOAD_DATE = "upload_date";
 	public static final String KEY_COMMENT = "comment";
@@ -59,11 +60,11 @@ public class UploadsDbAdapter {
 	private static final String DATABASE_CREATE = "create table uploads (_id integer primary key autoincrement, "
 			+ "url text not null, filename text not null, thumbnail blob, "
 			+ "upload_date timestamp not null DEFAULT current_timestamp, "
-			+ "comment text not null);";
+			+ "comment text not null, mimetype text);";
 
 	private static final String DATABASE_NAME = "666ups";
 	private static final String DATABASE_TABLE = "uploads";
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 3;
 
 	private final Context mCtx;
 
@@ -82,9 +83,10 @@ public class UploadsDbAdapter {
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion
-					+ ", which will destroy all old data");
-			db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE);
-			onCreate(db);
+					+ ", which will NOT destroy all old data");
+			if (oldVersion < 3) {
+				db.execSQL("ALTER TABLE " + DATABASE_TABLE + " ADD mimetype text");
+			}
 		}
 	}
 
@@ -123,17 +125,25 @@ public class UploadsDbAdapter {
 	 * Create a new upload entry using the data provided. If the upload is successfully created
 	 * return the new rowId for that instance, otherwise return a -1 to indicate failure.
 	 * 
-	 * @param url the url of the uploaded image
-	 * @param filename the original filename including the full path
-	 * @param thumbnail a thumbnail of the imabe
-	 * @param comment user generated information about the image
+	 * @param url
+	 *            the url of the uploaded image
+	 * @param filename
+	 *            the original filename including the full path
+	 * @param mimetype
+	 *            the mime type of the file given
+	 * @param thumbnail
+	 *            a thumbnail of the image
+	 * @param comment
+	 *            user generated information about the image
 	 * @return rowId or -1 if failed
 	 */
-	public long createUpload(String url, String filename, byte[] thumbnail, String comment) {
+	public long createUpload(String url, String filename, String mimetype, byte[] thumbnail,
+			String comment) {
 		ContentValues initialValues = new ContentValues();
 
 		initialValues.put(KEY_URL, url);
 		initialValues.put(KEY_FILENAME, filename);
+		initialValues.put(KEY_MIMETYPE, mimetype);
 		initialValues.put(KEY_THUMBNAIL, thumbnail);
 		initialValues.put(KEY_COMMENT, comment);
 
@@ -160,7 +170,8 @@ public class UploadsDbAdapter {
 	public Cursor fetchAllUploads() {
 
 		return mDb.query(DATABASE_TABLE, new String[] { KEY_ROWID, KEY_URL, KEY_FILENAME,
-				KEY_THUMBNAIL, KEY_UPLOAD_DATE, KEY_COMMENT }, null, null, null, null, null);
+				KEY_MIMETYPE, KEY_THUMBNAIL, KEY_UPLOAD_DATE, KEY_COMMENT }, null, null, null,
+				null, null);
 	}
 
 	/**
@@ -175,29 +186,30 @@ public class UploadsDbAdapter {
 	public Cursor fetchUpload(long rowId) throws SQLException {
 
 		Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[] { KEY_ROWID, KEY_URL,
-				KEY_FILENAME, KEY_THUMBNAIL, KEY_UPLOAD_DATE, KEY_COMMENT }, KEY_ROWID + "="
-				+ rowId, null, null, null, null, null);
+				KEY_FILENAME, KEY_MIMETYPE, KEY_THUMBNAIL, KEY_UPLOAD_DATE, KEY_COMMENT },
+				KEY_ROWID + "=" + rowId, null, null, null, null, null);
 		if (mCursor != null) {
 			mCursor.moveToFirst();
 		}
 		return mCursor;
 
 	}
+
 	/**
 	 * Return url and comment for the upload that matches the given rowId
 	 * 
 	 * @param rowId
 	 *            id of upload to retrieve
-	 * @return  the url and the comment, null if not found
+	 * @return the url and the comment, null if not found
 	 */
 	public String[] fetchUploadUrlAndComment(long rowId) {
 
-		Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[] { KEY_ROWID, KEY_URL, KEY_COMMENT }, KEY_ROWID + "="
-				+ rowId, null, null, null, null, null);
+		Cursor mCursor = mDb.query(true, DATABASE_TABLE, new String[] { KEY_ROWID, KEY_URL,
+				KEY_COMMENT }, KEY_ROWID + "=" + rowId, null, null, null, null, null);
 		if (mCursor != null) {
 			mCursor.moveToFirst();
-			return new String[] {mCursor.getString(mCursor.getColumnIndex(KEY_URL)),
-					mCursor.getString(mCursor.getColumnIndex(KEY_COMMENT))};
+			return new String[] { mCursor.getString(mCursor.getColumnIndex(KEY_URL)),
+					mCursor.getString(mCursor.getColumnIndex(KEY_COMMENT)) };
 		}
 		return null;
 
