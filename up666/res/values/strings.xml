@@ -6,11 +6,10 @@
     <string name="devSmallText">Small Text</string>
     
     <string name="app_name">666up!</string>
-        
     <string name="mimeType">No mime type</string>
-    
     <string name="filePath">No file</string>
-
+    <string name="now">Just now</string>
+    
     <string name="share_title">Send link with..</string>
     <string name="share_subject">A picture link</string>
 

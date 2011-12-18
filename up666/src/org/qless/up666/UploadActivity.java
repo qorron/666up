@@ -36,6 +36,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -47,6 +48,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,23 +61,33 @@ import android.widget.Toast;
  */
 public class UploadActivity extends Activity {
 
+	//gui parts
+	private ImageView mThumbnailView;
+	private TextView mGreeting;
 	private TextView mMimeTypeTextView;
 	private TextView mFilePathTextView;
+	private TextView mUploadDateTextView;
 	private TextView mImageURLTextView;
 	private ProgressBar mProgress;
-	private TextView mGreeting;
+	private EditText mCommentEditText;
 	private Button mCopyButton;
 	private Button mShareButton;
+	private Button mConfirmButton;
 
-	private Exception ex;
+	// raw data
 	private String mImageURL;
 	private String mMimeType;
 	private String mFilePath;
-	private long mUploadId = -1;
 	private String mComment;
+	private String mUploadDate;
+	private byte[] mThumbnail;
+	private Long mUploadRowId;
 
+	// helpers, internals, ..
 	private UploadsDbAdapter mDbHelper;
-	private EditText mCommentEditText;
+	private boolean mIntentOk;
+	private Intent mIntent;
+	private Exception ex;
 
 	public enum Error {
 		FILE_NOT_FOUND, HOST_NOT_FOUND, NETWORK, BAD_URL, BAD_INTENT
@@ -94,119 +106,77 @@ public class UploadActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		// open database
 		mDbHelper = new UploadsDbAdapter(this);
 		mDbHelper.open();
+
 		mComment = ""; // initialize, so there is no null in the db
+
 		if (savedInstanceState != null) {
 			mImageURL = savedInstanceState.getString("mImageURL");
 			mFilePath = savedInstanceState.getString("mFilePath");
 			mMimeType = savedInstanceState.getString("mMimeType");
-			mUploadId = savedInstanceState.getLong("mUploadId");
+			mUploadRowId = savedInstanceState.getLong("mUploadId");
 			mComment = savedInstanceState.getString("mComment");
-		}
-		Intent intent = getIntent();
-		setContentView(R.layout.upload);
+			mUploadDate = savedInstanceState.getString("mUploadDate");
+			mThumbnail = savedInstanceState.getByteArray("mThumbnail");
 
+		}
+		mIntent = getIntent();
+
+		if (mUploadRowId == null) {
+			// if there was no row ID in the saved instance state, look if there is one in the
+			// intent
+			Log.d("mUploadRowId", "no mUploadRowId, tring to get it from the intent");
+			Bundle extras = mIntent.getExtras();
+			mUploadRowId = extras != null && extras.containsKey(UploadsDbAdapter.KEY_ROWID)  ? extras.getLong(UploadsDbAdapter.KEY_ROWID) : null;
+		}
+
+		setContentView(R.layout.upload_edit);
+
+		mThumbnailView = (ImageView) findViewById(R.id.largeThumbnailView);
 		mGreeting = (TextView) findViewById(R.id.hello);
 		mMimeTypeTextView = (TextView) findViewById(R.id.mimeType);
 		mFilePathTextView = (TextView) findViewById(R.id.filePath);
+		mUploadDateTextView = (TextView) findViewById(R.id.uploadDate);
 		mImageURLTextView = (TextView) findViewById(R.id.imageURL);
 		mProgress = (ProgressBar) findViewById(R.id.progressBarUpload);
+		mCommentEditText = (EditText) findViewById(R.id.editComment);
 		mCopyButton = (Button) findViewById(R.id.buttonCopy);
 		mShareButton = (Button) findViewById(R.id.buttonShare);
-		mCommentEditText = (EditText) findViewById(R.id.commentEditText);
+		mConfirmButton = (Button) findViewById(R.id.buttonSave);
 
 		mGreeting.setText(getString(R.string.uploadAt) + " " + getString(R.string.imageHoster));
 
-		mProgress.setVisibility(ProgressBar.INVISIBLE);
-		mCopyButton.setEnabled(false);
-		mShareButton.setEnabled(false);
+		guiEmpty(); // disable buttons for now
+		
+		setupGuiElements(); // set onClickers and stuff
 
-		mCommentEditText.addTextChangedListener(new TextWatcher() {
-
-			public void afterTextChanged(Editable s) {
-				mComment = s.toString();
-			}
-
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-				// nothing to do
-			}
-
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				// nothing to do
-			}
-		});
-
-		// Button to copy the url to the clipboard
-		mCopyButton.setOnClickListener(new Button.OnClickListener() {
-			public void onClick(View v) {
-				ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-				clipboard.setText(mImageURL);
-				Context context = getApplicationContext();
-				CharSequence text = getString(R.string.copyToast);
-				int duration = Toast.LENGTH_SHORT;
-				Toast toast = Toast.makeText(context, text, duration);
-				toast.show();
-			}
-		});
-
-		// Button to share the image url
-		mShareButton.setOnClickListener(new Button.OnClickListener() {
-			public void onClick(View v) {
-				Intent i = new Intent(android.content.Intent.ACTION_SEND);
-				i.setType("text/plain");
-				i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_subject));
-				i.putExtra(Intent.EXTRA_TEXT, mImageURL);
-				startActivity(Intent.createChooser(i, getString(R.string.share_title)));
-
-			}
-
-		});
-
-		if (mImageURL == null) {
+		if (mUploadRowId != null
+				&& (mThumbnail == null || mFilePath == null || mImageURL == null || mComment == null)) {
+			// we have a row id, but at least one 'nut null' field is null, so go get it from the db
+			Log.d("mUploadRowId", "mUploadRowId is here, fetching fields from the db: " + mUploadRowId);
+			fetchFromDb();
+			guiDone();
+			populateFields();
+		} else if (mImageURL == null) {
 			// since there is no previously stored url, we have to upload the
 			// file
-			if (Intent.ACTION_SEND.equals(intent.getAction())) {
-				Bundle extras = intent.getExtras();
-				if (extras.containsKey(Intent.EXTRA_STREAM)) {
-					Uri uri = (Uri) extras.getParcelable(Intent.EXTRA_STREAM);
-					String scheme = uri.getScheme();
-					boolean ok = false;
-					mMimeType = null;
-					mFilePath = null;
-					if (scheme.equals("content")) {
-						mMimeType = intent.getType();
-						ContentResolver contentResolver = getContentResolver();
-						Cursor cursor = contentResolver.query(uri, null, null, null, null);
-						cursor.moveToFirst();
-						mFilePath = cursor.getString(cursor
-								.getColumnIndexOrThrow(Images.Media.DATA));
-						ok = true;
-					} else if (scheme.equals("file")) {
-						mMimeType = intent.getType();
-						mFilePath = uri.getPath();
-						ok = true;
-					} else {
-						Log.d("BAD_INTENT", "no content scheme, is: " + scheme);
-						errorDialogue(null, Error.BAD_INTENT);
-					}
-					if (ok) {
-						mMimeTypeTextView.setText(mMimeType);
-						mFilePathTextView.setText(mFilePath);
-						new ImageUploadTask().execute(mFilePath);
-					}
-				} else {
-					Log.d("BAD_INTENT", "no EXTRA_STREAM");
-					errorDialogue(null, Error.BAD_INTENT);
-				}
-			} else {
-				Log.d("BAD_INTENT", "no ACTION_SEND");
-				errorDialogue(null, Error.BAD_INTENT);
+			Log.d("mUploadRowId", "no mUploadRowId and no mImageURL -> uplaod");
+			decodeIntent();
+			if (mIntentOk) {
+				mMimeTypeTextView.setText(mMimeType);
+				mFilePathTextView.setText(mFilePath);
+				new ImageUploadTask().execute(mFilePath);
 			}
+			guiProcessing();
+			generateThumbnail();
 		} else {
 			// we already have a url, so we just update the gui and make it look
 			// like expected.
-			resetGUI();
+			Log.d("mUploadRowId", "recovered from saved instance nothing to do");
+			populateFields();
+			guiDone();
 		}
 
 	}
@@ -217,15 +187,15 @@ public class UploadActivity extends Activity {
 	 */
 	private void saveState() {
 		if (mImageURL != null) {
-			if (-1 == mUploadId) {
+			if (null == mUploadRowId) {
 				// has never been saved to the db
 				Log.d("database", "stored new upload");
-				byte[] thumbnail = ImageProcessor.thumbnail(mFilePath, 100);
-				mUploadId = mDbHelper.createUpload(mImageURL, mFilePath, mMimeType, thumbnail,
+				generateThumbnail(); // does nothing if the thumbnail already exists
+				mUploadRowId = mDbHelper.createUpload(mImageURL, mFilePath, mMimeType, mThumbnail,
 						mComment);
 			} else {
 				// has been saved, just update the comment
-				mDbHelper.updateCommentOnUpload(mUploadId, mComment);
+				mDbHelper.updateCommentOnUpload(mUploadRowId, mComment);
 				Log.d("database", "update comment");
 			}
 		}
@@ -243,8 +213,10 @@ public class UploadActivity extends Activity {
 		outState.putString("mImageURL", mImageURL);
 		outState.putString("mMimeType", mMimeType);
 		outState.putString("mFilePath", mFilePath);
-		outState.putLong("mUploadId", mUploadId);
+		outState.putLong("mUploadId", mUploadRowId);
 		outState.putString("mComment", mComment);
+		outState.putByteArray("mThumbnail", mThumbnail);
+		outState.putString("mUploadDate", mUploadDate);
 	}
 
 	/*
@@ -290,6 +262,7 @@ public class UploadActivity extends Activity {
 
 			mCopyButton.setEnabled(true);
 			mShareButton.setEnabled(true);
+
 		}
 	}
 
@@ -370,15 +343,179 @@ public class UploadActivity extends Activity {
 	}
 
 	/**
-	 * displays the values we have and enables the buttons
+	 * get the fields from the db.
 	 */
-	private void resetGUI() {
-		mProgress.setVisibility(ProgressBar.INVISIBLE);
+	private void fetchFromDb() {
+		if (mUploadRowId != null) {
+			Cursor upload = mDbHelper.fetchUpload(mUploadRowId);
+			startManagingCursor(upload);
+			mComment = upload.getString(upload.getColumnIndexOrThrow(UploadsDbAdapter.KEY_COMMENT));
+			mImageURL = upload.getString(upload.getColumnIndexOrThrow(UploadsDbAdapter.KEY_URL));
+			mFilePath = upload.getString(upload
+					.getColumnIndexOrThrow(UploadsDbAdapter.KEY_FILENAME));
+			mMimeType = upload.getString(upload
+					.getColumnIndexOrThrow(UploadsDbAdapter.KEY_MIMETYPE));
+			mUploadDate = upload.getString(upload
+					.getColumnIndexOrThrow(UploadsDbAdapter.KEY_UPLOAD_DATE));
+
+			mThumbnail = upload.getBlob(upload.getColumnIndex(UploadsDbAdapter.KEY_THUMBNAIL));
+
+		}
+	}
+
+	/**
+	 * displays the values we have
+	 */
+	private void populateFields() {
 		mMimeTypeTextView.setText(mMimeType);
 		mFilePathTextView.setText(mFilePath);
 		mImageURLTextView.setText(mImageURL);
+		mCommentEditText.setText(mComment);
+		mUploadDateTextView.setText(mUploadDate);
+
+		if (mThumbnail != null) {
+			mThumbnailView.setImageBitmap(BitmapFactory.decodeByteArray(mThumbnail, 0,
+					mThumbnail.length));
+		} else {
+			mThumbnailView.setImageResource(android.R.drawable.ic_menu_gallery);
+		}
+
+	}
+
+	private void generateThumbnail() {
+		if (mFilePath != null && mThumbnail == null) {
+			try {
+				mThumbnail = ImageProcessor.thumbnail(mFilePath, 100);
+			} catch (Exception e) {
+				// no file, no thumbnail.
+			}
+		}
+	}
+
+	/**
+	 * bring GUI an an empty state. i.e. disable buttons as the serve no purpose unless the upload
+	 * is done or the data has been fetched from the db
+	 */
+	private void guiEmpty() {
+		mProgress.setVisibility(ProgressBar.INVISIBLE);
+		mCopyButton.setEnabled(false);
+		mShareButton.setEnabled(false);
+	}
+
+	/**
+	 * bring GUI an an processing state. i.e. disable buttons and show the progress indicator
+	 * 
+	 */
+	private void guiProcessing() {
+		mProgress.setVisibility(ProgressBar.VISIBLE);
+		mCopyButton.setEnabled(false);
+		mShareButton.setEnabled(false);
+	}
+
+	/**
+	 * bring GUI an an done state. i.e. enable buttons and hide the progress indicator
+	 * 
+	 */
+	private void guiDone() {
+		mProgress.setVisibility(ProgressBar.INVISIBLE);
 		mCopyButton.setEnabled(true);
 		mShareButton.setEnabled(true);
+	}
+
+	/**
+	 * sets up onClicks for buttons. must be called once on activity creation
+	 */
+	private void setupGuiElements() {
+		if (mCommentEditText == null ){
+			Log.d("NULL", "mCommentEditText == null @setupGuiElements(");
+		}
+		mCommentEditText.addTextChangedListener(new TextWatcher() {
+
+			public void afterTextChanged(Editable s) {
+				mComment = s.toString();
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				// nothing to do
+			}
+
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				// nothing to do
+			}
+		});
+
+		// Button to copy the url to the clipboard
+		mCopyButton.setOnClickListener(new Button.OnClickListener() {
+			public void onClick(View v) {
+				ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+				clipboard.setText(mImageURL);
+				Context context = getApplicationContext();
+				CharSequence text = getString(R.string.copyToast);
+				int duration = Toast.LENGTH_SHORT;
+				Toast toast = Toast.makeText(context, text, duration);
+				toast.show();
+			}
+		});
+
+		// Button to share the image url
+		mShareButton.setOnClickListener(new Button.OnClickListener() {
+			public void onClick(View v) {
+				Intent i = new Intent(android.content.Intent.ACTION_SEND);
+				i.setType("text/plain");
+				i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_subject));
+				i.putExtra(Intent.EXTRA_TEXT, mImageURL);
+				startActivity(Intent.createChooser(i, getString(R.string.share_title)));
+
+			}
+
+		});
+		mConfirmButton.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View view) {
+				setResult(RESULT_OK);
+				finish();
+			}
+
+		});
+
+	}
+
+	/**
+	 * for upload intents: handles intent parsing and sets member variables: mMimeType, mFilePath
+	 * accordingly
+	 */
+	private void decodeIntent() {
+		if (Intent.ACTION_SEND.equals(mIntent.getAction())) {
+			Bundle extras = mIntent.getExtras();
+			if (extras.containsKey(Intent.EXTRA_STREAM)) {
+				Uri uri = (Uri) extras.getParcelable(Intent.EXTRA_STREAM);
+				String scheme = uri.getScheme();
+				mMimeType = null;
+				mFilePath = null;
+				if (scheme.equals("content")) {
+					mMimeType = mIntent.getType();
+					ContentResolver contentResolver = getContentResolver();
+					Cursor cursor = contentResolver.query(uri, null, null, null, null);
+					cursor.moveToFirst();
+					mFilePath = cursor.getString(cursor.getColumnIndexOrThrow(Images.Media.DATA));
+					mIntentOk = true;
+				} else if (scheme.equals("file")) {
+					mMimeType = mIntent.getType();
+					mFilePath = uri.getPath();
+					mIntentOk = true;
+				} else {
+					Log.d("BAD_INTENT", "no content scheme, is: " + scheme);
+					errorDialogue(null, Error.BAD_INTENT);
+				}
+			} else {
+				Log.d("BAD_INTENT", "no EXTRA_STREAM");
+				errorDialogue(null, Error.BAD_INTENT);
+			}
+		} else {
+			Log.d("BAD_INTENT", "no ACTION_SEND");
+			errorDialogue(null, Error.BAD_INTENT);
+		}
+
 	}
 
 	/**
@@ -407,6 +544,7 @@ public class UploadActivity extends Activity {
 		@Override
 		protected URL doInBackground(String... params) {
 			URL url = null;
+
 			try {
 				url = ImageUploader.upload(params[0]);
 			} catch (FileNotFoundException e) {
@@ -437,9 +575,14 @@ public class UploadActivity extends Activity {
 			if (ex != null || error != null) {
 				errorDialogue(ex, error);
 			} else {
-				showURL(result);
+				mImageURLTextView.setText(result != null ? result.toString() : "nothing!");
+
+				if (result != null) {
+					mImageURL = result.toString();
+					populateFields();
+					guiDone();
+				}
 			}
 		}
 	}
-
 }

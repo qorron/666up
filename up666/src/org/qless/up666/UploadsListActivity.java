@@ -190,7 +190,7 @@ public class UploadsListActivity extends ListActivity {
 			startActivity(i);
 			return true;
 		case MENU_EDIT_ID:
-			i = new Intent(this, UploadEdit.class);
+			i = new Intent(this, UploadActivity.class);
 			i.putExtra(UploadsDbAdapter.KEY_ROWID, info.id);
 			startActivityForResult(i, ACTIVITY_EDIT);
 			return true;
