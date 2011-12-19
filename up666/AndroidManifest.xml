@@ -16,7 +16,7 @@
 			</intent-filter>
 		</activity>
 		<activity android:name=".UploadActivity" android:label="@string/app_name">
-			<intent-filter>
+			<intent-filter android:label="@string/titleUpload">
 				<action android:name="android.intent.action.SEND" />
 				<category android:name="android.intent.category.DEFAULT" />
 				<data android:mimeType="image/*" />
