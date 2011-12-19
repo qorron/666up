@@ -150,6 +150,7 @@ public class UploadsListActivity extends ListActivity {
 		menu.add(0, MENU_EDIT_ID, 1, R.string.menu_edit);
 		menu.add(0, MENU_SEE_ORIGINAL_ID, 2, R.string.menu_see_original);
 		menu.add(0, MENU_DELETE_ID, 3, R.string.menu_delete);
+		menu.setHeaderTitle(R.string.contextTitle);
 	}
 
 	/*
