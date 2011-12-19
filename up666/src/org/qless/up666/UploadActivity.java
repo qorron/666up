@@ -145,7 +145,7 @@ public class UploadActivity extends Activity {
 		mCopyButton = (Button) findViewById(R.id.buttonCopy);
 		mShareButton = (Button) findViewById(R.id.buttonShare);
 		mConfirmButton = (Button) findViewById(R.id.buttonSave);
-
+		
 		mGreeting.setText(getString(R.string.uploadAt) + " " + getString(R.string.imageHoster));
 
 		guiEmpty(); // disable buttons for now
@@ -400,6 +400,7 @@ public class UploadActivity extends Activity {
 		mProgress.setVisibility(ProgressBar.INVISIBLE);
 		mCopyButton.setEnabled(false);
 		mShareButton.setEnabled(false);
+		mGreeting.setVisibility(View.INVISIBLE);
 	}
 
 	/**
@@ -410,6 +411,7 @@ public class UploadActivity extends Activity {
 		mProgress.setVisibility(ProgressBar.VISIBLE);
 		mCopyButton.setEnabled(false);
 		mShareButton.setEnabled(false);
+		mGreeting.setVisibility(View.VISIBLE);
 	}
 
 	/**
@@ -420,6 +422,7 @@ public class UploadActivity extends Activity {
 		mProgress.setVisibility(ProgressBar.INVISIBLE);
 		mCopyButton.setEnabled(true);
 		mShareButton.setEnabled(true);
+		mGreeting.setVisibility(View.INVISIBLE);
 	}
 
 	/**
