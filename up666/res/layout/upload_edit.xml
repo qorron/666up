@@ -4,11 +4,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    <EditText
+        android:id="@+id/editComment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_comment" >
+
+        <requestFocus />
+    </EditText>
+
     <ImageView
         android:id="@+id/largeThumbnailView"
         android:layout_width="160dp"
         android:layout_height="160dp"
-        android:layout_centerHorizontal="true"
+        android:layout_below="@id/editComment"
         android:layout_margin="3dp"
         android:background="@android:drawable/gallery_thumb"
         android:contentDescription="@string/descThumbnail"
@@ -52,38 +61,28 @@
         android:layout_below="@id/uploadDate"
         android:text="@string/imageURL" />
 
-    <EditText
-        android:id="@+id/editComment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/imageURL"
-        android:hint="@string/hint_comment" >
-
-        <requestFocus />
-    </EditText>
-
     <Button
         android:id="@+id/buttonCopy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/editComment"
+        android:layout_toRightOf="@id/largeThumbnailView"
         android:text="@string/copy" />
 
     <Button
         android:id="@+id/buttonShare"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/editComment"
-        android:layout_toRightOf="@id/buttonCopy"
+        android:layout_below="@id/buttonCopy"
+        android:layout_toRightOf="@id/largeThumbnailView"
         android:text="@string/share" />
 
     <Button
         android:id="@+id/buttonSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/editComment"
-        android:layout_toRightOf="@id/buttonShare"
+        android:layout_below="@id/buttonShare"
+        android:layout_toRightOf="@id/largeThumbnailView"
         android:text="@string/buttonSave" />
 
     <ProgressBar
