@@ -15,11 +15,11 @@
 
     <string name="share">Share</string>
     <string name="copy">Copy</string>
+    <string name="buttonSave">Done</string>
     
+    <string name="titleUpload">Upload</string>
+    <string name="titleEdit">Edit</string>
     
-    <string name="buttonCamera">Take picture</string>
-    <string name="buttonNoCamera">No camera present</string>
-    <string name="buttonSave">Save</string>
     <string name="uploadAt">Upload Image at</string>
     
     <string name="introductionTitle">Upload a file and share the link</string>
@@ -55,7 +55,10 @@
     <string name="copyToast">URL copied</string>
     <string name="noPhotoToast">Picture was not taken</string>
     
-    <string name="descThumbnail">Vorschau</string>
     
+        <string name="descThumbnail">Thumbnail</string>
+        <string name="contextTitle">Link entry</string>
+        
+        
     
 </resources>
