@@ -61,36 +61,39 @@
         android:layout_below="@id/uploadDate"
         android:text="@string/imageURL" />
 
-    <Button
-        android:id="@+id/buttonCopy"
+    <LinearLayout
+        android:id="@+id/uploadButtons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/editComment"
-        android:layout_toRightOf="@id/largeThumbnailView"
-        android:text="@string/copy" />
+            android:layout_below="@id/editComment"
+            android:layout_toRightOf="@id/largeThumbnailView"
+        android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/buttonShare"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/buttonCopy"
-        android:layout_toRightOf="@id/largeThumbnailView"
-        android:text="@string/share" />
+        <Button
+            android:id="@+id/buttonCopy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/copy" />
 
-    <Button
-        android:id="@+id/buttonSave"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/buttonShare"
-        android:layout_toRightOf="@id/largeThumbnailView"
-        android:text="@string/buttonSave" />
+        <Button
+            android:id="@+id/buttonShare"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/share" />
+
+        <Button
+            android:id="@+id/buttonSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/buttonSave" />
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progressBarUpload"
         style="?android:attr/progressBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/editComment"
+        android:layout_alignBottom="@id/imageURL"
         android:layout_marginLeft="3dp"
         android:layout_toRightOf="@id/imageURL" />
 

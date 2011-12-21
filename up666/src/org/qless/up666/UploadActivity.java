@@ -400,7 +400,8 @@ public class UploadActivity extends Activity {
 		mProgress.setVisibility(ProgressBar.INVISIBLE);
 		mCopyButton.setEnabled(false);
 		mShareButton.setEnabled(false);
-		mGreeting.setVisibility(View.INVISIBLE);
+		mConfirmButton.setEnabled(false);
+		mGreeting.setVisibility(View.VISIBLE);
 	}
 
 	/**
@@ -411,6 +412,7 @@ public class UploadActivity extends Activity {
 		mProgress.setVisibility(ProgressBar.VISIBLE);
 		mCopyButton.setEnabled(false);
 		mShareButton.setEnabled(false);
+		mConfirmButton.setEnabled(false);
 		mGreeting.setVisibility(View.VISIBLE);
 	}
 
@@ -422,7 +424,8 @@ public class UploadActivity extends Activity {
 		mProgress.setVisibility(ProgressBar.INVISIBLE);
 		mCopyButton.setEnabled(true);
 		mShareButton.setEnabled(true);
-		mGreeting.setVisibility(View.INVISIBLE);
+		mConfirmButton.setEnabled(true);
+		mGreeting.setVisibility(View.GONE);
 	}
 
 	/**
