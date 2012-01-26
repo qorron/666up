@@ -61,7 +61,7 @@ import android.widget.Toast;
  */
 public class UploadActivity extends Activity {
 
-	//gui parts
+	// gui parts
 	private ImageView mThumbnailView;
 	private TextView mGreeting;
 	private TextView mMimeTypeTextView;
@@ -129,7 +129,8 @@ public class UploadActivity extends Activity {
 			// intent
 			Log.d("mUploadRowId", "no mUploadRowId, tring to get it from the intent");
 			Bundle extras = mIntent.getExtras();
-			mUploadRowId = extras != null && extras.containsKey(UploadsDbAdapter.KEY_ROWID)  ? extras.getLong(UploadsDbAdapter.KEY_ROWID) : null;
+			mUploadRowId = extras != null && extras.containsKey(UploadsDbAdapter.KEY_ROWID) ? extras
+					.getLong(UploadsDbAdapter.KEY_ROWID) : null;
 		}
 
 		setContentView(R.layout.upload_edit);
@@ -145,17 +146,18 @@ public class UploadActivity extends Activity {
 		mCopyButton = (Button) findViewById(R.id.buttonCopy);
 		mShareButton = (Button) findViewById(R.id.buttonShare);
 		mConfirmButton = (Button) findViewById(R.id.buttonSave);
-		
+
 		mGreeting.setText(getString(R.string.uploadAt) + " " + getString(R.string.imageHoster));
 
 		guiEmpty(); // disable buttons for now
-		
+
 		setupGuiElements(); // set onClickers and stuff
 
 		if (mUploadRowId != null
 				&& (mThumbnail == null || mFilePath == null || mImageURL == null || mComment == null)) {
 			// we have a row id, but at least one 'nut null' field is null, so go get it from the db
-			Log.d("mUploadRowId", "mUploadRowId is here, fetching fields from the db: " + mUploadRowId);
+			Log.d("mUploadRowId", "mUploadRowId is here, fetching fields from the db: "
+					+ mUploadRowId);
 			fetchFromDb();
 			guiDone();
 			populateFields();
@@ -213,7 +215,9 @@ public class UploadActivity extends Activity {
 		outState.putString("mImageURL", mImageURL);
 		outState.putString("mMimeType", mMimeType);
 		outState.putString("mFilePath", mFilePath);
-		outState.putLong("mUploadId", mUploadRowId);
+		if (mUploadRowId != null) {
+			outState.putLong("mUploadId", mUploadRowId);
+		}
 		outState.putString("mComment", mComment);
 		outState.putByteArray("mThumbnail", mThumbnail);
 		outState.putString("mUploadDate", mUploadDate);
@@ -432,7 +436,7 @@ public class UploadActivity extends Activity {
 	 * sets up onClicks for buttons. must be called once on activity creation
 	 */
 	private void setupGuiElements() {
-		if (mCommentEditText == null ){
+		if (mCommentEditText == null) {
 			Log.d("NULL", "mCommentEditText == null @setupGuiElements(");
 		}
 		mCommentEditText.addTextChangedListener(new TextWatcher() {
