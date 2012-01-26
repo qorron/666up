@@ -171,7 +171,7 @@ public class UploadsDbAdapter {
 
 		return mDb.query(DATABASE_TABLE, new String[] { KEY_ROWID, KEY_URL, KEY_FILENAME,
 				KEY_MIMETYPE, KEY_THUMBNAIL, KEY_UPLOAD_DATE, KEY_COMMENT }, null, null, null,
-				null, null);
+				null, KEY_UPLOAD_DATE + " desc");
 	}
 
 	/**
