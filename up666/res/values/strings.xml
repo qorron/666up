@@ -28,7 +28,7 @@
     <string name="errorTitleHostNotFound">666kb.com not found</string>
     <string name="errorMessageHostNotFound">The name 666kb.com could not be resolved. Is the network okay?</string>
     <string name="errorTitleNetwork">Network problem</string>
-    <string name="errorMessageNetwork">There was a problem while uploading the image. Maybe a firewall?</string>
+    <string name="errorMessageNetwork">There was a problem while uploading the image. 666kb.com may be down or a firewall may be blocking this app.</string>
     <string name="errorTitleFileNotFound">File not found</string>
     <string name="errorMessageFileNotFound">The requested file could not be found.</string>
     <string name="errorTitleBadURL">Bad reply</string>

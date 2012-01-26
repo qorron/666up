@@ -15,7 +15,7 @@
     <string name="errorTitleHostNotFound">666kb.com nicht gefunden</string>
     <string name="errorMessageHostNotFound">Der Name 666kb.com konnte nicht aufgelöst werden. Ist eine Netzwerkverbindung vorhanden?</string>
     <string name="errorTitleNetwork">Neztwerkproblem</string>
-    <string name="errorMessageNetwork">Wärend des Hochladens ist ein Fehler aufgetreten. Bitte ggf. Firewall prüfen</string>
+    <string name="errorMessageNetwork">Wärend des Hochladens ist ein Fehler aufgetreten. 666kb.com funktioniert vielleicht gerade nicht oder wird blockiert, bitte ggf. Firewall prüfen!</string>
     <string name="errorTitleFileNotFound">Datei nicht gefunden</string>
     <string name="errorMessageFileNotFound">Die angegebene Datei konnte nicht gefunden werden bzw. der Zugriff darauf wurde verweigert.</string>
     <string name="errorTitleBadURL">Unverständliche Antwort</string>
