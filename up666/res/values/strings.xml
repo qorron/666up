@@ -1,25 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="imageURL">http://666kb.com</string>
+    <string name="imageHoster">http://666kb.com</string>
+    <string name="devMediumText">Medium Text</string>
+    <string name="devSmallText">Small Text</string>
+    
     <string name="app_name">666up!</string>
     <string name="mimeType">No mime type</string>
     <string name="filePath">No file</string>
-    <string name="imageURL">http://666kb.com</string>
+    <string name="now">Just now</string>
+    
     <string name="share_title">Send link with..</string>
     <string name="share_subject">A picture link</string>
+
     <string name="share">Share</string>
     <string name="copy">Copy</string>
-    <string name="buttonCamera">Take picture</string>
-    <string name="buttonNoCamera">No camera present</string>
-    <string name="imageHoster">http://666kb.com</string>
+    <string name="buttonSave">Done</string>
+    
+    <string name="titleUpload">Upload</string>
+    <string name="titleEdit">Edit</string>
+    
     <string name="uploadAt">Upload Image at</string>
+    
     <string name="introductionTitle">Upload a file and share the link</string>
-    <string name="introductionBody">This app is not launched directly. Instead, it can be used to share a picture via the gallery, the camera or any other app which provides an image. After the image has been uploaded to 666kb.com a link to the image is shown. This link can be copied to the clipboad or shared using any app capable of sharing text like email or SMS.\n\nThe developer of this app is not associated with the 666kb.com website.</string>
-    <string name="copyToast">URL copied</string>
+    <string name="introductionBody">The main purpose of this app is to upload Pictures at 666kb.com and then share the link. If launched directly, a list of all pictures uploaded is shown. To upload a picture share it via the gallery, the camera or any other app which provides an image. After the image has been uploaded to 666kb.com a link to the image is shown. This link can be copied to the clipboad or shared using any app capable of sharing text like email or SMS.\n\nTap on an entry to copy the URL. Press long for more options.\n\nThe developer of this app is not associated with the 666kb.com website.\n\nThis app and its source code is released under the GPLv3. The source code is available here: https://github.com/qorron/666up</string>
     
     <string name="errorTitleHostNotFound">666kb.com not found</string>
     <string name="errorMessageHostNotFound">The name 666kb.com could not be resolved. Is the network okay?</string>
     <string name="errorTitleNetwork">Network problem</string>
-    <string name="errorMessageNetwork">There was a problem while uploading the image. Maybe a firewall?</string>
+    <string name="errorMessageNetwork">There was a problem while uploading the image. 666kb.com may be down or a firewall may be blocking this app.</string>
     <string name="errorTitleFileNotFound">File not found</string>
     <string name="errorMessageFileNotFound">The requested file could not be found.</string>
     <string name="errorTitleBadURL">Bad reply</string>
@@ -29,6 +38,27 @@
     <string name="errorTitle">Unexpected Error</string>
     <string name="errorMessage">Something went wrong. Please, just try again and if the error persists you could help me fix it by sending me an error report.\n\nSend an error report now?</string>
 
-    <string name="errorSendAction">Send error report...</string>
+    <string name="errorSendAction">Send error report…</string>
     <string name="errorSubject">Error Report</string>
+    
+    <string name="no_uploads">There are no uploads stored in the database</string>
+    
+    <string name="menu_camera">Camera</string>
+    <string name="menu_about">About</string>
+    <string name="menu_preferences">Preferences</string>
+    <string name="menu_edit">Edit</string>
+    <string name="menu_see_original">Show original</string>
+    <string name="menu_delete">Delete</string>
+   
+    <string name="hint_comment">Comment…</string>
+
+    <string name="copyToast">URL copied</string>
+    <string name="noPhotoToast">Picture was not taken</string>
+    
+    
+        <string name="descThumbnail">Thumbnail</string>
+        <string name="contextTitle">Link entry</string>
+        
+        
+    
 </resources>

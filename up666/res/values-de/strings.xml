@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">666up!</string>
     <string name="mimeType">Kein mime Type</string>
     <string name="filePath">Keine Datei</string>
@@ -7,17 +8,14 @@
     <string name="share_subject">Ein Bilderlink</string>
     <string name="share">Senden</string>
     <string name="copy">Kopieren</string>
-    <string name="buttonCamera">Fotografieren</string>
-    <string name="buttonNoCamera">Keine Kamera vorhanden</string>
     <string name="uploadAt">Bild hochladen bei</string>
     <string name="introductionTitle">Bild hochladen und Link weitergeben</string>
-    <string name="introductionBody">Diese Anwendung wird nicht direkt gestartet. Stattdessen kann sie verwendet werden, um ein Bild von der Kamera oder der Galerie mittels der Weitergabefunktion als Link weiterzugeben. Nachdem das Bild bei 666kb.com hochgeladen wurde, wird der Link zum Bild angezeigt. Dieser Link kann dann in die Zwischenablage kopiert oder als Text weitergegeben werden.\n\nDiese Anwendung stammt nicht vom Betreiber der Webseite 666kb.com.</string>
-    <string name="copyToast">URL kopiert</string>    
-    
+    <string name="introductionBody">Der Hauptnutzen dieser Anwendung liegt im Hochladen von Bildern bei 666kb.com. In dieser Ansicht findet sich eine Liste aller bisher hochgeladenen Bilder. Um ein Bild von der Kamera oder der Galerie hoch zu laden verwendet man einfach die Weitergabefunktion der Programme. Nachdem das Bild bei 666kb.com hochgeladen wurde, wird der Link zum Bild angezeigt. Dieser Link kann dann in die Zwischenablage kopiert oder als Text weitergegeben werden.\n\nAntippen kopiert die URL in die Zwischenablage. Ein langer Druck öffnen weitere Optionen.\n\nDiese Anwendung stammt nicht vom Betreiber der Webseite 666kb.com.\n\nDiese Anwenung und der Quellencode wird unter der GPLv3 veröffentlicht. Der Quellencode befindet sich hier: https://github.com/qorron/666up</string>
+    <string name="copyToast">URL kopiert</string>
     <string name="errorTitleHostNotFound">666kb.com nicht gefunden</string>
     <string name="errorMessageHostNotFound">Der Name 666kb.com konnte nicht aufgelöst werden. Ist eine Netzwerkverbindung vorhanden?</string>
     <string name="errorTitleNetwork">Neztwerkproblem</string>
-    <string name="errorMessageNetwork">Wärend des Hochladens ist ein Fehler aufgetreten. Bitte ggf. Firewall prüfen</string>
+    <string name="errorMessageNetwork">Wärend des Hochladens ist ein Fehler aufgetreten. 666kb.com funktioniert vielleicht gerade nicht oder wird blockiert, bitte ggf. Firewall prüfen!</string>
     <string name="errorTitleFileNotFound">Datei nicht gefunden</string>
     <string name="errorMessageFileNotFound">Die angegebene Datei konnte nicht gefunden werden bzw. der Zugriff darauf wurde verweigert.</string>
     <string name="errorTitleBadURL">Unverständliche Antwort</string>
@@ -26,7 +24,21 @@
     <string name="errorMessageBadIntent">Die Anwendung konnte den Aurfur nicht verstehen.</string>
     <string name="errorTitle">Unerwarteter Fehler</string>
     <string name="errorMessage">Irgendetwas lief schief. Wenn der Fehler weiterhin besteht kannst du helfen den Fehler zu beheben, indem du einen Fehlerbericht sendest.\n\nFehlerbericht jetzt senden?</string>
-    
-    <string name="errorSendAction">Fehlerbericht senden...</string>
+    <string name="errorSendAction">Fehlerbericht senden…</string>
     <string name="errorSubject">Fehlerbericht</string>
+    <string name="no_uploads">Keine hochgeladenen Bilder gespeichert</string>
+    <string name="menu_camera">Kamera</string>
+    <string name="menu_about">Über</string>
+    <string name="menu_preferences">Einstellungen</string>
+    <string name="hint_comment">Beschreibung…</string>
+    <string name="noPhotoToast">Kein Bild aufgenommen</string>
+    <string name="descThumbnail">Vorschau</string>
+    <string name="now">Jetzt gerade</string>
+    <string name="buttonSave">Fertig</string>
+    <string name="menu_edit">Edit</string>
+    <string name="menu_see_original">Original anzeigen</string>
+    <string name="menu_delete">Entfernen</string>
+        <string name="contextTitle">Link Eintrag</string>
+    
+        
 </resources>
