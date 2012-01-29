@@ -92,8 +92,8 @@ public class UploadsListActivity extends ListActivity {
 				android.R.drawable.ic_menu_camera);
 		menu.add(0, MENU_ABOUT_ID, 2, R.string.menu_about).setIcon(
 				android.R.drawable.ic_menu_info_details);
-		menu.add(0, MENU_PREFERENCES_ID, 3, R.string.menu_preferences).setIcon(
-				android.R.drawable.ic_menu_preferences);
+		//menu.add(0, MENU_PREFERENCES_ID, 3, R.string.menu_preferences).setIcon(
+		//		android.R.drawable.ic_menu_preferences);
 
 		return result;
 	}
