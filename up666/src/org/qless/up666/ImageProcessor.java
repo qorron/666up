@@ -57,7 +57,7 @@ public class ImageProcessor {
 		ByteArrayOutputStream thumbnailStream = new ByteArrayOutputStream(bytes);
 		process(imagePath, thumbnailStream, size, true);
 
-		Log.i("ImageScale", "requwsted size: " + size + " projected bytes: " + bytes
+		Log.i("ImageScale", "requested size: " + size + " projected bytes: " + bytes
 				+ " used bytes: " + thumbnailStream.size());
 
 		return thumbnailStream.toByteArray();
@@ -82,13 +82,13 @@ public class ImageProcessor {
 	 *            the path to the image file
 	 * @param imageOutputStream
 	 *            the http stream
-	 * @param maxPixel
+	 * @param maxDimension
 	 *            maximum pixels in one direction
 	 * @param strict
 	 *            set to true if the resulting image should have exactly this dimension
 	 * 
 	 */
-	public static void process(String imagePath, OutputStream imageOutputStream, int maxPixel,
+	public static void process(String imagePath, OutputStream imageOutputStream, int maxDimension,
 			boolean strict) {
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inJustDecodeBounds = true; // to get the size without actually
@@ -102,7 +102,7 @@ public class ImageProcessor {
 		int originalPixels = originalHeight * originalWidth;
 		// Note: change this to long once gigapixel cameras have arrived
 
-		int maxPixels = maxPixel * maxPixel;
+		int maxPixels = maxDimension * maxDimension;
 		int maxPixelsForLoading = maxPixels;
 
 		if (strict) {
@@ -133,11 +133,18 @@ public class ImageProcessor {
 		if (strict) {
 			int width = bitmapOrg.getWidth();
 			int height = bitmapOrg.getHeight();
+			
+			int largestDimension = 0;
+			if (width > height) {
+				largestDimension = width;
+			} else {
+				largestDimension = height;
+			}
 
 			// calculate the scale
 			float scaleWidth = 1;
 			float scaleHeight = 1;
-			scaleWidth = scaleHeight = ((float) maxPixels) / originalPixels;
+			scaleWidth = scaleHeight = ((float) maxDimension) / largestDimension;
 
 			Log.i("ImageScale", "width: " + width + " height: " + height + "scale: " + scaleWidth);
 
@@ -152,7 +159,7 @@ public class ImageProcessor {
 			Bitmap resizedBitmap = Bitmap
 					.createBitmap(bitmapOrg, 0, 0, width, height, matrix, true);
 			resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, imageOutputStream);
-
+			Log.i("ImageScale", "new image width: " + resizedBitmap.getHeight() + " height: " +  resizedBitmap.getWidth());
 		} else {
 			bitmapOrg.compress(Bitmap.CompressFormat.JPEG, 90, imageOutputStream);
 		}

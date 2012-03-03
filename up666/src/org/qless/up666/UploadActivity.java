@@ -44,6 +44,7 @@ import android.provider.MediaStore.Images;
 import android.text.ClipboardManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -389,7 +390,9 @@ public class UploadActivity extends Activity {
 	private void generateThumbnail() {
 		if (mFilePath != null && mThumbnail == null) {
 			try {
-				mThumbnail = ImageProcessor.thumbnail(mFilePath, 100);
+				DisplayMetrics metrics = new DisplayMetrics();
+				getWindowManager().getDefaultDisplay().getMetrics(metrics);
+				mThumbnail = ImageProcessor.thumbnail(mFilePath, 100*metrics.densityDpi/160);
 			} catch (Exception e) {
 				// no file, no thumbnail.
 			}
