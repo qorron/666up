@@ -114,10 +114,15 @@ public class UploadActivity extends Activity {
 		mComment = ""; // initialize, so there is no null in the db
 
 		if (savedInstanceState != null) {
+			Log.d("onCreate", "got saved instance state");
+
 			mImageURL = savedInstanceState.getString("mImageURL");
 			mFilePath = savedInstanceState.getString("mFilePath");
 			mMimeType = savedInstanceState.getString("mMimeType");
 			mUploadRowId = savedInstanceState.getLong("mUploadId");
+			if (mUploadRowId == 0L) {
+				mUploadRowId = null;
+			}
 			mComment = savedInstanceState.getString("mComment");
 			mUploadDate = savedInstanceState.getString("mUploadDate");
 			mThumbnail = savedInstanceState.getByteArray("mThumbnail");
@@ -128,7 +133,7 @@ public class UploadActivity extends Activity {
 		if (mUploadRowId == null) {
 			// if there was no row ID in the saved instance state, look if there is one in the
 			// intent
-			Log.d("mUploadRowId", "no mUploadRowId, tring to get it from the intent");
+			Log.d("onCreate", "no mUploadRowId, tring to get it from the intent");
 			Bundle extras = mIntent.getExtras();
 			mUploadRowId = extras != null && extras.containsKey(UploadsDbAdapter.KEY_ROWID) ? extras
 					.getLong(UploadsDbAdapter.KEY_ROWID) : null;
@@ -157,15 +162,14 @@ public class UploadActivity extends Activity {
 		if (mUploadRowId != null
 				&& (mThumbnail == null || mFilePath == null || mImageURL == null || mComment == null)) {
 			// we have a row id, but at least one 'nut null' field is null, so go get it from the db
-			Log.d("mUploadRowId", "mUploadRowId is here, fetching fields from the db: "
-					+ mUploadRowId);
+			Log.d("onCreate", "mUploadRowId is here, fetching fields from the db: " + mUploadRowId);
 			fetchFromDb();
 			guiDone();
 			populateFields();
 		} else if (mImageURL == null) {
 			// since there is no previously stored url, we have to upload the
 			// file
-			Log.d("mUploadRowId", "no mUploadRowId and no mImageURL -> uplaod");
+			Log.d("onCreate", "no mUploadRowId and no mImageURL -> uplaod");
 			decodeIntent();
 			if (mIntentOk) {
 				mMimeTypeTextView.setText(mMimeType);
@@ -177,7 +181,7 @@ public class UploadActivity extends Activity {
 		} else {
 			// we already have a url, so we just update the gui and make it look
 			// like expected.
-			Log.d("mUploadRowId", "recovered from saved instance nothing to do");
+			Log.d("onCreate", "recovered from saved instance nothing to do");
 			populateFields();
 			guiDone();
 		}
@@ -190,17 +194,21 @@ public class UploadActivity extends Activity {
 	 */
 	private void saveState() {
 		if (mImageURL != null) {
+			Log.d("saveState", "mImageURL: " + mImageURL);
 			if (null == mUploadRowId) {
 				// has never been saved to the db
-				Log.d("database", "stored new upload");
+				Log.d("saveState", "stored new upload");
 				generateThumbnail(); // does nothing if the thumbnail already exists
 				mUploadRowId = mDbHelper.createUpload(mImageURL, mFilePath, mMimeType, mThumbnail,
 						mComment);
 			} else {
 				// has been saved, just update the comment
+				Log.d("saveState", "mUploadRowId: " + mUploadRowId);
 				mDbHelper.updateCommentOnUpload(mUploadRowId, mComment);
-				Log.d("database", "update comment");
+				Log.d("saveState", "update comment");
 			}
+		} else {
+			Log.d("saveState", "mImageURL: null, nothing to be done");
 		}
 	}
 
@@ -211,9 +219,13 @@ public class UploadActivity extends Activity {
 	 */
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		saveState();
-
-		outState.putString("mImageURL", mImageURL);
+		Log.d("persistance", "onSaveInstanceState");
+		if (mDbHelper != null) {
+			saveState();
+		}
+		if (mImageURL != null) {
+			outState.putString("mImageURL", mImageURL);
+		}
 		outState.putString("mMimeType", mMimeType);
 		outState.putString("mFilePath", mFilePath);
 		if (mUploadRowId != null) {
@@ -231,6 +243,7 @@ public class UploadActivity extends Activity {
 	 */
 	@Override
 	protected void onPause() {
+		Log.d("persistance", "onPause");
 		super.onPause();
 		saveState();
 		if (mDbHelper != null) {
@@ -246,29 +259,14 @@ public class UploadActivity extends Activity {
 	 */
 	@Override
 	protected void onResume() {
+		Log.d("persistance", "onResume");
+
 		super.onResume();
 		if (mDbHelper == null) {
 			mDbHelper = new UploadsDbAdapter(this);
 			mDbHelper.open();
 		}
 		// resetGUI();
-	}
-
-	/**
-	 * Displays the image URL and enables the copy/share buttons
-	 * 
-	 * @param url
-	 */
-	protected void showURL(URL url) {
-		mImageURLTextView.setText(url != null ? url.toString() : "nothing!");
-
-		if (url != null) {
-			mImageURL = url.toString();
-
-			mCopyButton.setEnabled(true);
-			mShareButton.setEnabled(true);
-
-		}
 	}
 
 	/**
@@ -280,7 +278,7 @@ public class UploadActivity extends Activity {
 		this.ex = ex;
 		final AlertDialog.Builder b = new AlertDialog.Builder(this);
 		b.setIcon(android.R.drawable.ic_dialog_alert);
-
+		Log.d("errorDialogue", "error: " + error.toString(), ex);
 		switch (error) {
 		case HOST_NOT_FOUND:
 			b.setTitle(R.string.errorTitleHostNotFound);
@@ -392,7 +390,7 @@ public class UploadActivity extends Activity {
 			try {
 				DisplayMetrics metrics = new DisplayMetrics();
 				getWindowManager().getDefaultDisplay().getMetrics(metrics);
-				mThumbnail = ImageProcessor.thumbnail(mFilePath, 100*metrics.densityDpi/160);
+				mThumbnail = ImageProcessor.thumbnail(mFilePath, 100 * metrics.densityDpi / 160);
 			} catch (Exception e) {
 				// no file, no thumbnail.
 			}
@@ -440,7 +438,7 @@ public class UploadActivity extends Activity {
 	 */
 	private void setupGuiElements() {
 		if (mCommentEditText == null) {
-			Log.d("NULL", "mCommentEditText == null @setupGuiElements(");
+			Log.d("setupGuiElements", "mCommentEditText == null @setupGuiElements(");
 		}
 		mCommentEditText.addTextChangedListener(new TextWatcher() {
 
@@ -498,6 +496,7 @@ public class UploadActivity extends Activity {
 	 * accordingly
 	 */
 	private void decodeIntent() {
+		Log.d("decodeIntent", "decoding...");
 		if (Intent.ACTION_SEND.equals(mIntent.getAction())) {
 			Bundle extras = mIntent.getExtras();
 			if (extras.containsKey(Intent.EXTRA_STREAM)) {
@@ -517,15 +516,15 @@ public class UploadActivity extends Activity {
 					mFilePath = uri.getPath();
 					mIntentOk = true;
 				} else {
-					Log.d("BAD_INTENT", "no content scheme, is: " + scheme);
+					Log.d("decodeIntent", "no content scheme, is: " + scheme);
 					errorDialogue(null, Error.BAD_INTENT);
 				}
 			} else {
-				Log.d("BAD_INTENT", "no EXTRA_STREAM");
+				Log.d("decodeIntent", "no EXTRA_STREAM");
 				errorDialogue(null, Error.BAD_INTENT);
 			}
 		} else {
-			Log.d("BAD_INTENT", "no ACTION_SEND");
+			Log.d("decodeIntent", "no ACTION_SEND");
 			errorDialogue(null, Error.BAD_INTENT);
 		}
 
