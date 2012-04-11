@@ -51,6 +51,7 @@ import android.widget.Toast;
  */
 public class UploadsListActivity extends ListActivity {
 	public static final int MENU_CAMERA_ID = Menu.FIRST;
+	public static final int MENU_GALLERY_ID = Menu.FIRST+7;
 	public static final int MENU_PREFERENCES_ID = Menu.FIRST + 1;
 	public static final int MENU_ABOUT_ID = Menu.FIRST + 2;
 	public static final int MENU_EDIT_ID = Menu.FIRST + 3;
@@ -59,7 +60,12 @@ public class UploadsListActivity extends ListActivity {
 	public static final int MENU_SHARE_ID = Menu.FIRST + 6;
 
 	private static final int ACTIVITY_CAPTURE_IMAGE = 0;
+	private static final int ACTIVITY_PICK_IMAGE = 2;
 	private static final int ACTIVITY_EDIT = 1;
+
+	private static final int SOURCE_CAMERA = 0;
+	private static final int SOURCE_GALLERY = 1;
+	
 	private Uri imageUri;
 
 	private UploadsDbAdapter mDbHelper;
@@ -90,7 +96,9 @@ public class UploadsListActivity extends ListActivity {
 
 		menu.add(0, MENU_CAMERA_ID, 1, R.string.menu_camera).setIcon(
 				android.R.drawable.ic_menu_camera);
-		menu.add(0, MENU_ABOUT_ID, 2, R.string.menu_about).setIcon(
+		menu.add(0, MENU_GALLERY_ID, 2, R.string.menu_gallery).setIcon(
+				android.R.drawable.ic_menu_gallery);
+		menu.add(0, MENU_ABOUT_ID, 3, R.string.menu_about).setIcon(
 				android.R.drawable.ic_menu_info_details);
 		//menu.add(0, MENU_PREFERENCES_ID, 3, R.string.menu_preferences).setIcon(
 		//		android.R.drawable.ic_menu_preferences);
@@ -107,7 +115,10 @@ public class UploadsListActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case MENU_CAMERA_ID:
-			startCameraIntent();
+			startGetImageIntent(SOURCE_CAMERA);
+			return true;
+		case MENU_GALLERY_ID:
+			startGetImageIntent(SOURCE_GALLERY);
 			return true;
 		case MENU_ABOUT_ID:
 			showAbout();
@@ -256,23 +267,34 @@ public class UploadsListActivity extends ListActivity {
 	/**
 	 * launch the camera to take a picture for immediate upload
 	 */
-	private void startCameraIntent() {
-		// define the file-name to save photo taken by Camera activity
-		String fileName = "new-photo-name.jpg";
-		// create parameters for Intent with filename
-		ContentValues values = new ContentValues();
-		values.put(MediaStore.Images.Media.TITLE, fileName);
-		values.put(MediaStore.Images.Media.DESCRIPTION, "Image capture by camera");
-		// imageUri is the current activity attribute, define and save it for
-		// later usage (also in onSaveInstanceState)
-		imageUri = getContentResolver()
-				.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-		// create new Intent
-		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-		intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-		intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+	private void startGetImageIntent(int source) {
+		switch (source) {
+		case SOURCE_CAMERA: {
+			// define the file-name to save photo taken by Camera activity
+			String fileName = "new-photo-name.jpg";
+			// create parameters for Intent with filename
+			ContentValues values = new ContentValues();
+			values.put(MediaStore.Images.Media.TITLE, fileName);
+			values.put(MediaStore.Images.Media.DESCRIPTION, "Image capture by camera");
+			// imageUri is the current activity attribute, define and save it for
+			// later usage (also in onSaveInstanceState)
+			imageUri = getContentResolver()
+					.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+			// create new Intent
+			Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+			intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
 
-		startActivityForResult(intent, ACTIVITY_CAPTURE_IMAGE);
+			startActivityForResult(intent, ACTIVITY_CAPTURE_IMAGE);
+			break;
+		}
+		case SOURCE_GALLERY: {
+			Intent intent = new Intent(Intent.ACTION_PICK);
+			intent.setType("image/*");
+			startActivityForResult(intent, ACTIVITY_PICK_IMAGE);
+			break;	
+		}
+		}		
 	}
 
 	/*
@@ -283,21 +305,18 @@ public class UploadsListActivity extends ListActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		switch (requestCode) {
+		case ACTIVITY_PICK_IMAGE: {
+			imageUri = data.getData();
+			upload();
+			return;
+		}
 		case ACTIVITY_CAPTURE_IMAGE:
 
 			if (resultCode == RESULT_OK) {
-
 				if (imageUri == null) {
 					Log.d("imageUri", "null!");
 				} else {
-
-					// use imageUri here to access the image
-					Bundle b = new Bundle();
-					b.putParcelable(Intent.EXTRA_STREAM, imageUri);
-					Intent i = new Intent(this, UploadActivity.class);
-					i.putExtras(b);
-					i.setAction(Intent.ACTION_SEND);
-					startActivity(i);
+					upload();
 				}
 
 			} else if (resultCode == RESULT_CANCELED) {
@@ -323,6 +342,18 @@ public class UploadsListActivity extends ListActivity {
 		b.setMessage(R.string.introductionBody);
 		b.setNeutralButton("Ok", null);
 		b.show();
+	}
+	
+	/**
+	 * uploads an image specified in the field imageUri
+	 */
+	private void upload() {
+		Bundle b = new Bundle();
+		b.putParcelable(Intent.EXTRA_STREAM, imageUri);
+		Intent i = new Intent(this, UploadActivity.class);
+		i.putExtras(b);
+		i.setAction(Intent.ACTION_SEND);
+		startActivity(i);
 	}
 
 }

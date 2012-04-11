@@ -28,6 +28,7 @@
     <string name="errorSubject">Fehlerbericht</string>
     <string name="no_uploads">Noch keine hochgeladenen Bilder gespeichert.\n\nUm ein Bild hoch zu laden drücke die Menütaste und wähle "Kamera" um ein neues Bild auf zu nehmen oder "Gallerie" um ein Bild aus der Gallerie aus zu wählen.\nDanach wird das Bild bei 666kb.com hoch geladen und kann als Link weitergegeben werden. Praktisch für SMS oder Google Talk</string>
     <string name="menu_camera">Kamera</string>
+    <string name="menu_gallery">Gallerie</string>
     <string name="menu_about">Über</string>
     <string name="menu_preferences">Einstellungen</string>
     <string name="hint_comment">Beschreibung…</string>

@@ -43,6 +43,7 @@
     <string name="no_uploads">There are no uploads stored in the database yet.\n\nTo upload and share a picture press the menu button and select "Camera" to take a new photo or "Gallery" to pick a picture from your gallery.\nAfter that, the image is uploaded to 666kb.com and you can share it as a link. Useful for texting or Google Talk</string>
     
     <string name="menu_camera">Camera</string>
+    <string name="menu_gallery">Gallery</string>
     <string name="menu_about">About</string>
     <string name="menu_preferences">Preferences</string>
     <string name="menu_edit">Edit</string>
