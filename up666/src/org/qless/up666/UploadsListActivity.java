@@ -79,8 +79,8 @@ public class UploadsListActivity extends ListActivity {
 		}
 
 		setContentView(R.layout.uploads_list);
-			mDbHelper = new UploadsDbAdapter(this);
-			mDbHelper.open();
+		mDbHelper = new UploadsDbAdapter(this);
+		mDbHelper.open();
 		fillData();
 		registerForContextMenu(getListView());
 	}
@@ -222,7 +222,6 @@ public class UploadsListActivity extends ListActivity {
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putParcelable("uri", imageUri);
 	}
-
 
 	/**
 	 * reads out all uploads from the database and fills the list
