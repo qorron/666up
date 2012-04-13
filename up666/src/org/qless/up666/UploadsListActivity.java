@@ -79,8 +79,10 @@ public class UploadsListActivity extends ListActivity {
 		}
 
 		setContentView(R.layout.uploads_list);
-		mDbHelper = new UploadsDbAdapter(this);
-		mDbHelper.open();
+		if (mDbHelper == null) {
+			mDbHelper = new UploadsDbAdapter(this);
+			mDbHelper.open();
+		}
 		fillData();
 		registerForContextMenu(getListView());
 	}
@@ -221,6 +223,33 @@ public class UploadsListActivity extends ListActivity {
 	 */
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putParcelable("uri", imageUri);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Activity#onPause()
+	 */
+	protected void onPause() {
+		super.onPause();
+		if (mDbHelper != null) {
+			mDbHelper.close();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Activity#onResume()
+	 */
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (mDbHelper == null) {
+			mDbHelper = new UploadsDbAdapter(this);
+		}
+		mDbHelper.open();
+		fillData();
 	}
 
 	/**
