@@ -79,10 +79,8 @@ public class UploadsListActivity extends ListActivity {
 		}
 
 		setContentView(R.layout.uploads_list);
-		if (mDbHelper == null) {
 			mDbHelper = new UploadsDbAdapter(this);
 			mDbHelper.open();
-		}
 		fillData();
 		registerForContextMenu(getListView());
 	}
@@ -225,32 +223,6 @@ public class UploadsListActivity extends ListActivity {
 		outState.putParcelable("uri", imageUri);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onPause()
-	 */
-	protected void onPause() {
-		super.onPause();
-		if (mDbHelper != null) {
-			mDbHelper.close();
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onResume()
-	 */
-	@Override
-	protected void onResume() {
-		super.onResume();
-		if (mDbHelper == null) {
-			mDbHelper = new UploadsDbAdapter(this);
-		}
-		mDbHelper.open();
-		fillData();
-	}
 
 	/**
 	 * reads out all uploads from the database and fills the list
