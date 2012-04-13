@@ -51,7 +51,7 @@ import android.widget.Toast;
  */
 public class UploadsListActivity extends ListActivity {
 	public static final int MENU_CAMERA_ID = Menu.FIRST;
-	public static final int MENU_GALLERY_ID = Menu.FIRST+7;
+	public static final int MENU_GALLERY_ID = Menu.FIRST + 7;
 	public static final int MENU_PREFERENCES_ID = Menu.FIRST + 1;
 	public static final int MENU_ABOUT_ID = Menu.FIRST + 2;
 	public static final int MENU_EDIT_ID = Menu.FIRST + 3;
@@ -65,7 +65,7 @@ public class UploadsListActivity extends ListActivity {
 
 	private static final int SOURCE_CAMERA = 0;
 	private static final int SOURCE_GALLERY = 1;
-	
+
 	private Uri imageUri;
 
 	private UploadsDbAdapter mDbHelper;
@@ -100,8 +100,8 @@ public class UploadsListActivity extends ListActivity {
 				android.R.drawable.ic_menu_gallery);
 		menu.add(0, MENU_ABOUT_ID, 3, R.string.menu_about).setIcon(
 				android.R.drawable.ic_menu_info_details);
-		//menu.add(0, MENU_PREFERENCES_ID, 3, R.string.menu_preferences).setIcon(
-		//		android.R.drawable.ic_menu_preferences);
+		// menu.add(0, MENU_PREFERENCES_ID, 3, R.string.menu_preferences).setIcon(
+		// android.R.drawable.ic_menu_preferences);
 
 		return result;
 	}
@@ -278,8 +278,8 @@ public class UploadsListActivity extends ListActivity {
 			values.put(MediaStore.Images.Media.DESCRIPTION, "Image capture by camera");
 			// imageUri is the current activity attribute, define and save it for
 			// later usage (also in onSaveInstanceState)
-			imageUri = getContentResolver()
-					.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+			imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+					values);
 			// create new Intent
 			Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 			intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
@@ -292,9 +292,9 @@ public class UploadsListActivity extends ListActivity {
 			Intent intent = new Intent(Intent.ACTION_PICK);
 			intent.setType("image/*");
 			startActivityForResult(intent, ACTIVITY_PICK_IMAGE);
-			break;	
+			break;
 		}
-		}		
+		}
 	}
 
 	/*
@@ -343,7 +343,7 @@ public class UploadsListActivity extends ListActivity {
 		b.setNeutralButton("Ok", null);
 		b.show();
 	}
-	
+
 	/**
 	 * uploads an image specified in the field imageUri
 	 */
