@@ -40,7 +40,7 @@
     <string name="errorSendAction">Send error report…</string>
     <string name="errorSubject">Error Report</string>
     
-    <string name="no_uploads">There are no uploads stored in the database yet.\n\nTo upload and share a picture press the menu button and select "Camera" to take a new photo or "Gallery" to pick a picture from your gallery.\nAfter that, the image is uploaded to 666kb.com and you can share it as a link. Useful for texting or Google Talk</string>
+    <string name="no_uploads">Welcome!\n\nThere are no uploads stored in the database yet.\n\nTo upload and share a picture press the menu button and select \"Camera\" to take a new photo or \"Gallery\" to pick a picture from your gallery.\n\nAfter that, the image is uploaded to 666kb.com and you can share it as a link.\n\nUseful for texting or Google Talk</string>
     
     <string name="menu_camera">Camera</string>
     <string name="menu_gallery">Gallery</string>

@@ -26,7 +26,7 @@
     <string name="errorMessage">Irgendetwas lief schief. Wenn der Fehler weiterhin besteht kannst du helfen den Fehler zu beheben, indem du einen Fehlerbericht sendest.\n\nFehlerbericht jetzt senden?</string>
     <string name="errorSendAction">Fehlerbericht senden…</string>
     <string name="errorSubject">Fehlerbericht</string>
-    <string name="no_uploads">Noch keine hochgeladenen Bilder gespeichert.\n\nUm ein Bild hoch zu laden drücke die Menütaste und wähle "Kamera" um ein neues Bild auf zu nehmen oder "Gallerie" um ein Bild aus der Gallerie aus zu wählen.\nDanach wird das Bild bei 666kb.com hoch geladen und kann als Link weitergegeben werden. Praktisch für SMS oder Google Talk</string>
+    <string name="no_uploads">Willkommen!\n\nNoch keine hochgeladenen Bilder gespeichert.\n\nUm ein Bild hoch zu laden drücke die Menütaste und wähle \"Kamera\" um ein neues Bild auf zu nehmen oder \"Gallerie\" um ein Bild aus der Gallerie aus zu wählen.\n\nDanach wird das Bild bei 666kb.com hoch geladen und kann als Link weitergegeben werden.\n\nPraktisch für SMS oder Google Talk</string>
     <string name="menu_camera">Kamera</string>
     <string name="menu_gallery">Gallerie</string>
     <string name="menu_about">Über</string>
