@@ -349,9 +349,9 @@ public class UploadsListActivity extends ListActivity {
 				}
 
 			} else if (resultCode == RESULT_CANCELED) {
-				Toast.makeText(this, getString(R.string.noPhotoToast), Toast.LENGTH_SHORT);
+				Toast.makeText(this, getString(R.string.noPhotoToast), Toast.LENGTH_LONG).show();
 			} else {
-				Toast.makeText(this, getString(R.string.noPhotoToast), Toast.LENGTH_SHORT);
+				Toast.makeText(this, getString(R.string.noPhotoToast), Toast.LENGTH_LONG).show();
 			}
 			return;
 		case ACTIVITY_EDIT:
