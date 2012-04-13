@@ -54,6 +54,7 @@
 
     <string name="copyToast">URL copied</string>
     <string name="noPhotoToast">Picture was not taken</string>
+    <string name="noGalleryToast">No picture was selected</string>
     
     
         <string name="descThumbnail">Thumbnail</string>

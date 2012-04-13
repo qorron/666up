@@ -335,8 +335,19 @@ public class UploadsListActivity extends ListActivity {
 		super.onActivityResult(requestCode, resultCode, data);
 		switch (requestCode) {
 		case ACTIVITY_PICK_IMAGE: {
-			imageUri = data.getData();
-			upload();
+			if (resultCode == RESULT_OK) {
+				imageUri = data.getData(); // TODO: errorhandling like below..
+				if (imageUri == null) {
+					Log.d("imageUri", "null!");
+
+				} else {
+					upload();
+				}
+			} else if (resultCode == RESULT_CANCELED) {
+				Toast.makeText(this, getString(R.string.noGalleryToast), Toast.LENGTH_LONG).show();
+			} else {
+				Toast.makeText(this, getString(R.string.noGalleryToast), Toast.LENGTH_LONG).show();
+			}
 			return;
 		}
 		case ACTIVITY_CAPTURE_IMAGE:

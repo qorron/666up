@@ -33,6 +33,7 @@
     <string name="menu_preferences">Einstellungen</string>
     <string name="hint_comment">Beschreibung…</string>
     <string name="noPhotoToast">Kein Bild aufgenommen</string>
+    <string name="noGalleryToast">Kein Bild aufsgewählt</string>
     <string name="descThumbnail">Vorschau</string>
     <string name="now">Jetzt gerade</string>
     <string name="buttonSave">Fertig</string>
