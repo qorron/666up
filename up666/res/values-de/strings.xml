@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">666up!</string>
     <string name="mimeType">Kein mime Type</string>
     <string name="filePath">Keine Datei</string>
@@ -21,14 +20,14 @@
     <string name="errorTitleBadURL">Unverständliche Antwort</string>
     <string name="errorMessageBadURL">Die Antwort von 666kb.com enthielt keine Bilder-URL. Möglicherweise ist das Bild nicht in Ordnung (666kb.com unterstützt nur: png, jpeg und gif) oder die Webseite wurde verändert. Falls dieser Fehler wiederholt bei mehreren Dateien auftritt kannst du hier einen Fehlerbericht senden.\n\nFehlerbericht jetzt senden?</string>
     <string name="errorTitleBadIntent">Falscher Aufruf</string>
-    <string name="errorMessageBadIntent">Die Anwendung konnte den Aurfur nicht verstehen.</string>
+    <string name="errorMessageBadIntent">Die Anwendung konnte den Aufruf nicht verstehen.</string>
     <string name="errorTitle">Unerwarteter Fehler</string>
     <string name="errorMessage">Irgendetwas lief schief. Wenn der Fehler weiterhin besteht kannst du helfen den Fehler zu beheben, indem du einen Fehlerbericht sendest.\n\nFehlerbericht jetzt senden?</string>
     <string name="errorSendAction">Fehlerbericht senden…</string>
     <string name="errorSubject">Fehlerbericht</string>
-    <string name="no_uploads">Willkommen!\n\nNoch keine hochgeladenen Bilder gespeichert.\n\nUm ein Bild hoch zu laden drücke die Menütaste und wähle \"Kamera\" um ein neues Bild auf zu nehmen oder \"Gallerie\" um ein Bild aus der Gallerie aus zu wählen.\n\nDanach wird das Bild bei 666kb.com hoch geladen und kann als Link weitergegeben werden.\n\nPraktisch für SMS oder Google Talk</string>
+    <string name="no_uploads">Willkommen!\n\nNoch keine hochgeladenen Bilder gespeichert.\n\nUm ein Bild hoch zu laden drücke die Menütaste und wähle \"Kamera\" um ein neues Bild auf zu nehmen oder \"Galerie\" um ein Bild aus der Galerie aus zu wählen.\n\nDanach wird das Bild bei 666kb.com hoch geladen und kann als Link weitergegeben werden.\n\nPraktisch für SMS oder Google Talk</string>
     <string name="menu_camera">Kamera</string>
-    <string name="menu_gallery">Gallerie</string>
+    <string name="menu_gallery">Galerie</string>
     <string name="menu_about">Über</string>
     <string name="menu_preferences">Einstellungen</string>
     <string name="hint_comment">Beschreibung…</string>
@@ -40,7 +39,5 @@
     <string name="menu_edit">Edit</string>
     <string name="menu_see_original">Original anzeigen</string>
     <string name="menu_delete">Entfernen</string>
-        <string name="contextTitle">Link Eintrag</string>
-    
-        
+    <string name="contextTitle">Link Eintrag</string>
 </resources>
