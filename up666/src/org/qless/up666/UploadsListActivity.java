@@ -222,6 +222,21 @@ public class UploadsListActivity extends ListActivity {
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putParcelable("uri", imageUri);
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Activity#onDestroy()
+	 */
+	@Override
+	protected void onDestroy() {
+		Log.d("persistance", "onDestroy");
+		super.onDestroy();
+		if (mDbHelper != null) {
+			mDbHelper.close();
+			mDbHelper = null;
+		}
+	}
 
 	/**
 	 * reads out all uploads from the database and fills the list

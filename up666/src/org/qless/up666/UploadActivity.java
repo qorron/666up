@@ -221,6 +221,7 @@ public class UploadActivity extends Activity {
 	protected void onSaveInstanceState(Bundle outState) {
 		Log.d("persistance", "onSaveInstanceState");
 		if (mDbHelper != null) {
+			Log.d("persistance", "onSaveInstanceState, savestate.");			
 			saveState();
 		}
 		if (mImageURL != null) {
@@ -239,13 +240,12 @@ public class UploadActivity extends Activity {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see android.app.Activity#onPause()
+	 * @see android.app.Activity#onDestroy()
 	 */
 	@Override
-	protected void onPause() {
-		Log.d("persistance", "onPause");
-		super.onPause();
-		saveState();
+	protected void onDestroy() {
+		Log.d("persistance", "onDestroy");
+		super.onDestroy();
 		if (mDbHelper != null) {
 			mDbHelper.close();
 			mDbHelper = null;
@@ -256,7 +256,6 @@ public class UploadActivity extends Activity {
 	 * (non-Javadoc)
 	 * 
 	 * @see android.app.Activity#onResume()
-	 */
 	@Override
 	protected void onResume() {
 		Log.d("persistance", "onResume");
@@ -268,6 +267,7 @@ public class UploadActivity extends Activity {
 		}
 		// resetGUI();
 	}
+	 */
 
 	/**
 	 * Displays an error dialogue with the abilits to send a log on some errors
