@@ -59,4 +59,24 @@
     
         <string name="descThumbnail">Thumbnail</string>
         <string name="contextTitle">Link entry</string>
+        
+        
+        
+        
+        
+        
+        
+        
+    <string name="preferences_general">Preferences</string>
+    <string name="pref_tab_action_title">Tab action</string>
+    <string name="pref_tab_action_dialog_title">Tab action</string>
+    <string name="pref_tab_action_desc">What to do if an entry is tapped</string>
+    <string name="pref_tab_action_default">copy</string>
+        
+        
+        
+        
+        
+        
+        
 </resources>

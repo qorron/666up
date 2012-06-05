@@ -28,10 +28,13 @@ import android.app.ListActivity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.text.ClipboardManager;
 import android.util.Log;
@@ -69,6 +72,10 @@ public class UploadsListActivity extends ListActivity {
 	private Uri imageUri;
 
 	private UploadsDbAdapter mDbHelper;
+	
+	private enum TabAction {copy, open, share};
+	private TabAction mTabAction;
+	SharedPreferences mSettings;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -77,6 +84,9 @@ public class UploadsListActivity extends ListActivity {
 		if (savedInstanceState != null) {
 			imageUri = savedInstanceState.getParcelable("uri");
 		}
+		
+		mSettings = PreferenceManager.getDefaultSharedPreferences(this);
+	    mTabAction = TabAction.valueOf( mSettings.getString("tab_action", getString( R.string.pref_tab_action_default)));
 
 		setContentView(R.layout.uploads_list);
 		mDbHelper = new UploadsDbAdapter(this);
@@ -98,10 +108,10 @@ public class UploadsListActivity extends ListActivity {
 				android.R.drawable.ic_menu_camera);
 		menu.add(0, MENU_GALLERY_ID, 2, R.string.menu_gallery).setIcon(
 				android.R.drawable.ic_menu_gallery);
-		menu.add(0, MENU_ABOUT_ID, 3, R.string.menu_about).setIcon(
+		menu.add(0, MENU_PREFERENCES_ID, 3, R.string.menu_preferences).setIcon(
+				android.R.drawable.ic_menu_preferences);
+		menu.add(0, MENU_ABOUT_ID, 4, R.string.menu_about).setIcon(
 				android.R.drawable.ic_menu_info_details);
-		// menu.add(0, MENU_PREFERENCES_ID, 3, R.string.menu_preferences).setIcon(
-		// android.R.drawable.ic_menu_preferences);
 
 		return result;
 	}
@@ -120,6 +130,9 @@ public class UploadsListActivity extends ListActivity {
 		case MENU_GALLERY_ID:
 			startGetImageIntent(SOURCE_GALLERY);
 			return true;
+		case MENU_PREFERENCES_ID:
+			showPrefs();
+			return true;
 		case MENU_ABOUT_ID:
 			showAbout();
 			return true;
@@ -135,16 +148,27 @@ public class UploadsListActivity extends ListActivity {
 	 */
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
+
+		// onPrefChange doesn't work for some reason
+		//SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+	    mTabAction = TabAction.valueOf( mSettings.getString("tab_action", getString( R.string.pref_tab_action_default)));
+
 		super.onListItemClick(l, v, position, id);
-		String[] urlComment = mDbHelper.fetchUploadUrlAndComment(id);
-		if (urlComment != null) {
-			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-			clipboard.setText(urlComment[0]);
-			Context context = getApplicationContext();
-			CharSequence text = getString(R.string.copyToast);
-			int duration = Toast.LENGTH_SHORT;
-			Toast toast = Toast.makeText(context, text, duration);
-			toast.show();
+		switch (mTabAction) {
+		case copy:
+			copy(id);			
+			break;
+			
+		case open:
+			open(id);
+			break;
+
+		case share:
+			share(id);
+			break;
+			
+		default:
+			break;
 		}
 	}
 
@@ -172,25 +196,16 @@ public class UploadsListActivity extends ListActivity {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-		Intent i;
-		Cursor upload = mDbHelper.fetchUpload(info.id);
-		startManagingCursor(upload);
 
 		switch (item.getItemId()) {
 		case MENU_SHARE_ID:
-			i = new Intent(android.content.Intent.ACTION_SEND);
-			i.setType("text/plain");
-			i.putExtra(
-					Intent.EXTRA_SUBJECT,
-					upload.getString(upload.getColumnIndex(UploadsDbAdapter.KEY_COMMENT))
-							.equals("") ? getString(R.string.share_subject) : upload
-							.getString(upload.getColumnIndex(UploadsDbAdapter.KEY_COMMENT)));
-			i.putExtra(Intent.EXTRA_TEXT,
-					upload.getString(upload.getColumnIndex(UploadsDbAdapter.KEY_URL)));
-			startActivity(Intent.createChooser(i, getString(R.string.share_title)));
+			share(info.id);
 			return true;
 
 		case MENU_SEE_ORIGINAL_ID:
+			Intent i;
+			Cursor upload = mDbHelper.fetchUpload(info.id);
+			startManagingCursor(upload);
 			i = new Intent(android.content.Intent.ACTION_VIEW);
 			File file = new File(upload.getString(upload
 					.getColumnIndex(UploadsDbAdapter.KEY_FILENAME)));
@@ -201,15 +216,16 @@ public class UploadsListActivity extends ListActivity {
 							: "image/*");
 			startActivity(i);
 			return true;
+			
 		case MENU_EDIT_ID:
-			i = new Intent(this, UploadActivity.class);
-			i.putExtra(UploadsDbAdapter.KEY_ROWID, info.id);
-			startActivityForResult(i, ACTIVITY_EDIT);
+			open(info.id);
 			return true;
+			
 		case MENU_DELETE_ID:
 			mDbHelper.deleteUpload(info.id);
 			fillData();
 			return true;
+			
 		}
 		return super.onContextItemSelected(item);
 	}
@@ -237,6 +253,7 @@ public class UploadsListActivity extends ListActivity {
 			mDbHelper = null;
 		}
 	}
+
 
 	/**
 	 * reads out all uploads from the database and fills the list
@@ -361,6 +378,14 @@ public class UploadsListActivity extends ListActivity {
 	/**
 	 * shows a dialog with information about the program
 	 */
+	private void showPrefs() {
+		Intent i = new Intent(this, ListPrefActivity.class);
+		startActivity(i);
+	}
+
+	/**
+	 * shows a dialog with information about the program
+	 */
 	private void showAbout() {
 		final AlertDialog.Builder b = new AlertDialog.Builder(this);
 		b.setIcon(android.R.drawable.ic_dialog_info);
@@ -381,5 +406,40 @@ public class UploadsListActivity extends ListActivity {
 		i.setAction(Intent.ACTION_SEND);
 		startActivity(i);
 	}
-
+	
+	private void copy (long id) {
+		String[] urlComment = mDbHelper.fetchUploadUrlAndComment(id);
+		if (urlComment != null) {
+			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+			clipboard.setText(urlComment[0]);
+			Context context = getApplicationContext();
+			CharSequence text = getString(R.string.copyToast);
+			int duration = Toast.LENGTH_SHORT;
+			Toast toast = Toast.makeText(context, text, duration);
+			toast.show();
+		}
+		
+	}
+	private void open (long id) {
+		Intent i;
+		i = new Intent(this, UploadActivity.class);
+		i.putExtra(UploadsDbAdapter.KEY_ROWID, id);
+		startActivityForResult(i, ACTIVITY_EDIT);
+		
+	}
+	private void share (long id) {
+		Intent i;		
+		Cursor upload = mDbHelper.fetchUpload(id);
+		startManagingCursor(upload);
+		i = new Intent(android.content.Intent.ACTION_SEND);
+		i.setType("text/plain");
+		i.putExtra(
+				Intent.EXTRA_SUBJECT,
+				upload.getString(upload.getColumnIndex(UploadsDbAdapter.KEY_COMMENT))
+						.equals("") ? getString(R.string.share_subject) : upload
+						.getString(upload.getColumnIndex(UploadsDbAdapter.KEY_COMMENT)));
+		i.putExtra(Intent.EXTRA_TEXT,
+				upload.getString(upload.getColumnIndex(UploadsDbAdapter.KEY_URL)));
+		startActivity(Intent.createChooser(i, getString(R.string.share_title)));
+	}
 }
