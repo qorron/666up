@@ -483,6 +483,7 @@ public class UploadActivity extends Activity {
 		mConfirmButton.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View view) {
+				saveState();
 				setResult(RESULT_OK);
 				finish();
 			}

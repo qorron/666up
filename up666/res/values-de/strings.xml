@@ -9,7 +9,7 @@
     <string name="copy">Kopieren</string>
     <string name="uploadAt">Bild hochladen bei</string>
     <string name="introductionTitle">Bild hochladen und Link weitergeben</string>
-    <string name="introductionBody">Der Hauptnutzen dieser Anwendung liegt im Hochladen von Bildern bei 666kb.com. In dieser Ansicht findet sich eine Liste aller bisher hochgeladenen Bilder. Um ein Bild von der Kamera oder der Galerie hoch zu laden verwendet man einfach die Weitergabefunktion der Programme. Nachdem das Bild bei 666kb.com hochgeladen wurde, wird der Link zum Bild angezeigt. Dieser Link kann dann in die Zwischenablage kopiert oder als Text weitergegeben werden.\n\nAntippen kopiert die URL in die Zwischenablage. Ein langer Druck öffnet weitere Optionen.\n\nDiese Anwendung stammt nicht vom Betreiber der Webseite 666kb.com.\n\nDiese Anwenung und der Quellencode wird unter der GPLv3 veröffentlicht. Der Quellencode befindet sich hier: https://github.com/qorron/666up</string>
+    <string name="introductionBody">Der Hauptnutzen dieser Anwendung liegt im Hochladen von Bildern bei 666kb.com. In dieser Ansicht findet sich eine Liste aller bisher hochgeladenen Bilder. Um ein Bild von der Kamera oder der Galerie hochzuladen verwendet man einfach die Weitergabefunktion der Programme. Nachdem das Bild bei 666kb.com hochgeladen wurde, wird der Link zum Bild angezeigt. Dieser Link kann dann in die Zwischenablage kopiert oder als Text weitergegeben werden.\n\nAntippen kopiert die URL in die Zwischenablage. Ein langer Druck öffnet weitere Optionen.\n\nDiese Anwendung stammt nicht vom Betreiber der Webseite 666kb.com.\n\nDiese Anwenung und der Quellencode werden unter der GPLv3 veröffentlicht. Der Quellencode befindet sich hier: https://github.com/qorron/666up</string>
     <string name="copyToast">URL kopiert</string>
     <string name="errorTitleHostNotFound">666kb.com nicht gefunden</string>
     <string name="errorMessageHostNotFound">Der Name 666kb.com konnte nicht aufgelöst werden. Ist eine Netzwerkverbindung vorhanden?</string>
@@ -25,7 +25,7 @@
     <string name="errorMessage">Irgendetwas lief schief. Wenn der Fehler weiterhin besteht kannst du helfen den Fehler zu beheben, indem du einen Fehlerbericht sendest.\n\nFehlerbericht jetzt senden?</string>
     <string name="errorSendAction">Fehlerbericht senden…</string>
     <string name="errorSubject">Fehlerbericht</string>
-    <string name="no_uploads">Willkommen!\n\nNoch keine hochgeladenen Bilder gespeichert.\n\nUm ein Bild hoch zu laden drücke die Menütaste und wähle \"Kamera\" um ein neues Bild auf zu nehmen oder \"Galerie\" um ein Bild aus der Galerie aus zu wählen.\n\nDanach wird das Bild bei 666kb.com hoch geladen und kann als Link weitergegeben werden.\n\nPraktisch für SMS oder Google Talk</string>
+    <string name="no_uploads">Willkommen!\n\nNoch keine hochgeladenen Bilder gespeichert.\n\nUm ein Bild hochzuladen drücke die Menütaste und wähle \"Kamera\" um ein neues Bild aufzunehmen oder \"Galerie\" um ein Bild aus der Galerie aus zu wählen.\n\nDanach wird das Bild bei 666kb.com hoch geladen und kann als Link weitergegeben werden.\n\nPraktisch für SMS oder Google Talk</string>
     <string name="menu_camera">Kamera</string>
     <string name="menu_gallery">Galerie</string>
     <string name="menu_about">Über</string>
@@ -40,4 +40,9 @@
     <string name="menu_see_original">Original anzeigen</string>
     <string name="menu_delete">Entfernen</string>
     <string name="contextTitle">Link Eintrag</string>
+    <string name="preferences_general">Einstellungen</string>
+    <string name="pref_tab_action_title">Antippen</string>
+    <string name="pref_tab_action_dialog_title">Beim Antippen</string>
+    <string name="pref_tab_action_desc">Aktion beim Antippen</string>
+
 </resources>

@@ -29,7 +29,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -61,6 +60,7 @@ public class UploadsListActivity extends ListActivity {
 	public static final int MENU_SEE_ORIGINAL_ID = Menu.FIRST + 4;
 	public static final int MENU_DELETE_ID = Menu.FIRST + 5;
 	public static final int MENU_SHARE_ID = Menu.FIRST + 6;
+	public static final int MENU_COPY_ID = Menu.FIRST + 7;
 
 	private static final int ACTIVITY_CAPTURE_IMAGE = 0;
 	private static final int ACTIVITY_PICK_IMAGE = 2;
@@ -181,10 +181,11 @@ public class UploadsListActivity extends ListActivity {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		menu.add(0, MENU_SHARE_ID, 0, R.string.share);
-		menu.add(0, MENU_EDIT_ID, 1, R.string.menu_edit);
-		menu.add(0, MENU_SEE_ORIGINAL_ID, 2, R.string.menu_see_original);
-		menu.add(0, MENU_DELETE_ID, 3, R.string.menu_delete);
+		menu.add(0, MENU_COPY_ID, 0, R.string.copy);
+		menu.add(0, MENU_SHARE_ID, 1, R.string.share);
+		menu.add(0, MENU_EDIT_ID, 2, R.string.menu_edit);
+		menu.add(0, MENU_SEE_ORIGINAL_ID, 3, R.string.menu_see_original);
+		menu.add(0, MENU_DELETE_ID, 4, R.string.menu_delete);
 		menu.setHeaderTitle(R.string.contextTitle);
 	}
 
@@ -226,6 +227,10 @@ public class UploadsListActivity extends ListActivity {
 			fillData();
 			return true;
 			
+		case MENU_COPY_ID:
+			copy(info.id);
+			return true;
+
 		}
 		return super.onContextItemSelected(item);
 	}

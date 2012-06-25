@@ -4,6 +4,9 @@
     <string name="imageHoster">http://666kb.com</string>
     <string name="devMediumText">Medium Text</string>
     <string name="devSmallText">Small Text</string>
+
+    <string name="pref_tab_action_default">copy</string>
+    <string name="titleUpload">Upload</string>
     
     <string name="app_name">666up!</string>
     <string name="mimeType">No mime type</string>
@@ -17,12 +20,11 @@
     <string name="copy">Copy</string>
     <string name="buttonSave">Done</string>
     
-    <string name="titleUpload">Upload</string>
     
     <string name="uploadAt">Upload Image at</string>
     
     <string name="introductionTitle">Upload a file and share the link</string>
-    <string name="introductionBody">The main purpose of this app is to upload Pictures at 666kb.com and then share the link. If launched directly, a list of all pictures uploaded is shown. To upload a picture share it via the gallery, the camera or any other app which provides an image. After the image has been uploaded to 666kb.com a link to the image is shown. This link can be copied to the clipboad or shared using any app capable of sharing text like email or SMS.\n\nTap on an entry to copy the URL. Press long for more options.\n\nThe developer of this app is not associated with the 666kb.com website.\n\nThis app and its source code is released under the GPLv3. The source code is available here: https://github.com/qorron/666up</string>
+    <string name="introductionBody">The main purpose of this app is to upload pictures at 666kb.com and then share the link. If launched directly, a list of all pictures uploaded is shown. To upload a picture share it via the gallery, the camera or any other app which provides an image. After the image has been uploaded to 666kb.com a link to the image is shown. This link can be copied to the clipboad or shared using any app capable of sharing text like email or SMS.\n\nTap on an entry to copy the URL. Press long for more options.\n\nThe developer of this app is not associated with the 666kb.com website.\n\nThis app and its source code is released under the GPLv3. The source code is available here: https://github.com/qorron/666up</string>
     
     <string name="errorTitleHostNotFound">666kb.com not found</string>
     <string name="errorMessageHostNotFound">The name 666kb.com could not be resolved. Is the network okay?</string>
@@ -71,7 +73,6 @@
     <string name="pref_tab_action_title">Tab action</string>
     <string name="pref_tab_action_dialog_title">Tab action</string>
     <string name="pref_tab_action_desc">What to do if an entry is tapped</string>
-    <string name="pref_tab_action_default">copy</string>
         
         
         
