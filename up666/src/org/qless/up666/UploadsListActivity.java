@@ -40,6 +40,7 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -52,10 +53,6 @@ import android.widget.Toast;
  * @author quattro Main activity, displays a list of previously uploaded images
  */
 public class UploadsListActivity extends ListActivity {
-	public static final int MENU_CAMERA_ID = Menu.FIRST;
-	public static final int MENU_GALLERY_ID = Menu.FIRST + 7;
-	public static final int MENU_PREFERENCES_ID = Menu.FIRST + 1;
-	public static final int MENU_ABOUT_ID = Menu.FIRST + 2;
 	public static final int MENU_EDIT_ID = Menu.FIRST + 3;
 	public static final int MENU_SEE_ORIGINAL_ID = Menu.FIRST + 4;
 	public static final int MENU_DELETE_ID = Menu.FIRST + 5;
@@ -102,18 +99,9 @@ public class UploadsListActivity extends ListActivity {
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		boolean result = super.onCreateOptionsMenu(menu);
-
-		menu.add(0, MENU_CAMERA_ID, 1, R.string.menu_camera).setIcon(
-				android.R.drawable.ic_menu_camera);
-		menu.add(0, MENU_GALLERY_ID, 2, R.string.menu_gallery).setIcon(
-				android.R.drawable.ic_menu_gallery);
-		menu.add(0, MENU_PREFERENCES_ID, 3, R.string.menu_preferences).setIcon(
-				android.R.drawable.ic_menu_preferences);
-		menu.add(0, MENU_ABOUT_ID, 4, R.string.menu_about).setIcon(
-				android.R.drawable.ic_menu_info_details);
-
-		return result;
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.uploads_list_activity, menu);
+		return true;
 	}
 
 	/*
@@ -124,16 +112,16 @@ public class UploadsListActivity extends ListActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case MENU_CAMERA_ID:
+		case R.id.menu_camera:
 			startGetImageIntent(SOURCE_CAMERA);
 			return true;
-		case MENU_GALLERY_ID:
+		case R.id.menu_gallery:
 			startGetImageIntent(SOURCE_GALLERY);
 			return true;
-		case MENU_PREFERENCES_ID:
+		case R.id.menu_preferences:
 			showPrefs();
 			return true;
-		case MENU_ABOUT_ID:
+		case R.id.menu_about:
 			showAbout();
 			return true;
 		}
