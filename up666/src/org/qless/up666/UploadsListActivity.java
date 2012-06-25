@@ -320,6 +320,7 @@ public class UploadsListActivity extends ListActivity {
 			break;
 		}
 		}
+		fillData();
 	}
 
 	/*

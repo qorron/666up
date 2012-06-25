@@ -252,6 +252,16 @@ public class UploadActivity extends Activity {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onPause()
+	 */
+	@Override
+	protected void onPause() {
+		Log.d("persistance", "onPause");
+		saveState();
+		super.onPause();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
