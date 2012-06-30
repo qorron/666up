@@ -38,6 +38,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore.Images;
@@ -110,6 +113,8 @@ public class UploadActivity extends Activity {
 		// open database
 		mDbHelper = new UploadsDbAdapter(this);
 		mDbHelper.open();
+
+		NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
 		mComment = ""; // initialize, so there is no null in the db
 
@@ -185,6 +190,12 @@ public class UploadActivity extends Activity {
 			populateFields();
 			guiDone();
 		}
+		
+		if (nfcAdapter != null) {
+			NdefRecord[] bla = { NdefRecord.createUri(mImageURL) };
+			NdefMessage beamLink = new NdefMessage(bla);
+			nfcAdapter.setNdefPushMessage(beamLink, this);
+		}
 
 	}
 
@@ -221,7 +232,7 @@ public class UploadActivity extends Activity {
 	protected void onSaveInstanceState(Bundle outState) {
 		Log.d("persistance", "onSaveInstanceState");
 		if (mDbHelper != null) {
-			Log.d("persistance", "onSaveInstanceState, savestate.");			
+			Log.d("persistance", "onSaveInstanceState, savestate.");
 			saveState();
 		}
 		if (mImageURL != null) {
@@ -252,7 +263,9 @@ public class UploadActivity extends Activity {
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onPause()
 	 */
 	@Override
@@ -261,23 +274,6 @@ public class UploadActivity extends Activity {
 		saveState();
 		super.onPause();
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onResume()
-	@Override
-	protected void onResume() {
-		Log.d("persistance", "onResume");
-
-		super.onResume();
-		if (mDbHelper == null) {
-			mDbHelper = new UploadsDbAdapter(this);
-			mDbHelper.open();
-		}
-		// resetGUI();
-	}
-	 */
 
 	/**
 	 * Displays an error dialogue with the abilits to send a log on some errors
