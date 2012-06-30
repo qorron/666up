@@ -92,6 +92,7 @@ public class UploadActivity extends Activity {
 	private boolean mIntentOk;
 	private Intent mIntent;
 	private Exception ex;
+	private NfcAdapter mNfcAdapter;
 
 	public enum Error {
 		FILE_NOT_FOUND, HOST_NOT_FOUND, NETWORK, BAD_URL, BAD_INTENT
@@ -114,7 +115,7 @@ public class UploadActivity extends Activity {
 		mDbHelper = new UploadsDbAdapter(this);
 		mDbHelper.open();
 
-		NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+		mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
 		mComment = ""; // initialize, so there is no null in the db
 
@@ -190,13 +191,7 @@ public class UploadActivity extends Activity {
 			populateFields();
 			guiDone();
 		}
-		
-		if (nfcAdapter != null) {
-			NdefRecord[] bla = { NdefRecord.createUri(mImageURL) };
-			NdefMessage beamLink = new NdefMessage(bla);
-			nfcAdapter.setNdefPushMessage(beamLink, this);
-		}
-
+		setupBeam();
 	}
 
 	/**
@@ -440,6 +435,19 @@ public class UploadActivity extends Activity {
 	}
 
 	/**
+	 * setup a message für Android Beam
+	 * 
+	 */
+	private void setupBeam() {
+		if (mNfcAdapter != null && mImageURL != null) {
+			NdefRecord[] bla = { NdefRecord.createUri(mImageURL) };
+			NdefMessage beamLink = new NdefMessage(bla);
+			mNfcAdapter.setNdefPushMessage(beamLink, this);
+		}
+	}
+
+	
+	/**
 	 * sets up onClicks for buttons. must be called once on activity creation
 	 */
 	private void setupGuiElements() {
@@ -600,6 +608,7 @@ public class UploadActivity extends Activity {
 					mImageURL = result.toString();
 					populateFields();
 					guiDone();
+					setupBeam();
 				}
 			}
 		}
