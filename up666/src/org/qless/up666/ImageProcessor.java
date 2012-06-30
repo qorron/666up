@@ -21,11 +21,13 @@
 package org.qless.up666;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.util.Log;
 
 /**
@@ -90,6 +92,29 @@ public class ImageProcessor {
 	 */
 	public static void process(String imagePath, OutputStream imageOutputStream, int maxDimension,
 			boolean strict) {
+		
+		int rotate = 0;
+		try {
+			ExifInterface exif = new ExifInterface(imagePath);
+			switch (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
+			case ExifInterface.ORIENTATION_ROTATE_90:
+				rotate = 90;
+				break;
+			case ExifInterface.ORIENTATION_ROTATE_180:
+				rotate = 180;
+				break;
+			case ExifInterface.ORIENTATION_ROTATE_270:
+				rotate = 270;
+				break;
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inJustDecodeBounds = true; // to get the size without actually
 											// loading the image into the
@@ -130,7 +155,7 @@ public class ImageProcessor {
 
 		bitmapOrg = BitmapFactory.decodeFile(imagePath, options);
 
-		if (strict) {
+		if (strict || rotate != 0) {
 			int width = bitmapOrg.getWidth();
 			int height = bitmapOrg.getHeight();
 			
@@ -153,7 +178,8 @@ public class ImageProcessor {
 			// resize the bit map
 			matrix.postScale(scaleWidth, scaleHeight);
 			// rotate the Bitmap
-			// matrix.postRotate(45);
+			matrix.postRotate(rotate);
+			Log.i("ImageScale", "rotate: " + rotate);
 
 			// recreate the new Bitmap
 			Bitmap resizedBitmap = Bitmap
