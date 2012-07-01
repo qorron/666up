@@ -435,18 +435,16 @@ public class UploadActivity extends Activity {
 	}
 
 	/**
-	 * setup a message für Android Beam
+	 * setup a message for Android Beam
 	 * 
 	 */
 	private void setupBeam() {
 		if (mNfcAdapter != null && mImageURL != null) {
-			NdefRecord[] bla = { NdefRecord.createUri(mImageURL) };
-			NdefMessage beamLink = new NdefMessage(bla);
-			mNfcAdapter.setNdefPushMessage(beamLink, this);
+			mNfcAdapter.setNdefPushMessage(
+					new NdefMessage(new NdefRecord[] { NdefRecord.createUri(mImageURL) }), this);
 		}
 	}
 
-	
 	/**
 	 * sets up onClicks for buttons. must be called once on activity creation
 	 */
