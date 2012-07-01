@@ -35,6 +35,7 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.media.ExifInterface;
 import android.util.Log;
 
 /**
@@ -116,7 +117,7 @@ public class ImageUploader {
 		// Get the number of bytes in the file
 		long length = file.length();
 
-		if (length > maxSize) {
+		if (length > maxSize || needsRotation(filename)) {
 			ImageProcessor.process(filename, outputStream);
 		} else {
 			// FileNotFoundException -> most likely the filename got escaped and needs to be
@@ -183,5 +184,19 @@ public class ImageUploader {
 			Log.d("content", page);
 			return null;
 		}
+	}
+	private static boolean needsRotation(String filename) {
+		ExifInterface exif;
+		try {
+			exif = new ExifInterface(filename);
+			int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+			if (orientation == ExifInterface.ORIENTATION_NORMAL || orientation == ExifInterface.ORIENTATION_UNDEFINED ){
+				return false;
+			}
+		} catch (IOException e) {
+			// this should not occur under normal circumstances.
+			// if it does, it doesn't matter.
+		}
+		return true;
 	}
 }
