@@ -432,6 +432,9 @@ public class UploadActivity extends Activity {
 		mShareButton.setEnabled(true);
 		mConfirmButton.setEnabled(true);
 		mGreeting.setVisibility(View.GONE);
+		if (mNfcAdapter != null) {
+			((TextView) findViewById(R.id.nfcAnnouncement)).setVisibility(View.VISIBLE);
+		}
 	}
 
 	/**
@@ -501,7 +504,6 @@ public class UploadActivity extends Activity {
 			}
 
 		});
-
 	}
 
 	/**
