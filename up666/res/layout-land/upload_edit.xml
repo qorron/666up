@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/relativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <EditText
+        android:id="@+id/editComment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_comment" >
+
+        <requestFocus />
+    </EditText>
+
+    <ImageView
+        android:id="@+id/largeThumbnailView"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_below="@id/editComment"
+        android:layout_margin="3dp"
+        android:background="@android:drawable/gallery_thumb"
+        android:contentDescription="@string/descThumbnail"
+        android:padding="5dp"
+        android:scaleType="fitCenter"
+        android:src="@android:drawable/ic_menu_gallery" >
+    </ImageView>
+
+    <TextView
+        android:id="@+id/hello"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/uploadButtons"
+        android:layout_below="@id/editComment"
+        android:text="@string/uploadAt" />
+
+    <TextView
+        android:id="@+id/filePath"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/uploadButtons"
+        android:layout_below="@id/hello"
+        android:text="@string/filePath" />
+
+    <TextView
+        android:id="@+id/mimeType"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/filePath"
+        android:layout_toRightOf="@id/uploadButtons"
+        android:text="@string/mimeType" />
+
+    <TextView
+        android:id="@+id/uploadDate"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/mimeType"
+        android:layout_toRightOf="@id/uploadButtons"
+        android:text="@string/now" />
+
+    <TextView
+        android:id="@+id/imageURL"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/uploadDate"
+        android:layout_toRightOf="@id/uploadButtons"
+        android:linksClickable="true"
+        android:text="@string/imageURL" />
+
+    <TextView
+        android:id="@+id/nfcAnnouncement"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imageURL"
+        android:layout_toRightOf="@id/uploadButtons"
+        android:visibility="gone"
+        android:text="@string/nfcAnnouncement" />
+    
+    <LinearLayout
+        android:id="@+id/uploadButtons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+            android:layout_below="@id/editComment"
+            android:layout_toRightOf="@id/largeThumbnailView"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/buttonCopy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/copy" />
+
+        <Button
+            android:id="@+id/buttonShare"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/share" />
+
+        <Button
+            android:id="@+id/buttonSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/buttonSave" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBarUpload"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/imageURL"
+        android:layout_marginLeft="3dp"
+        android:layout_toRightOf="@id/imageURL" />
+
+</RelativeLayout>
