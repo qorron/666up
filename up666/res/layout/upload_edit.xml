@@ -59,6 +59,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/uploadDate"
+        android:linksClickable="true"
         android:text="@string/imageURL" />
 
     <TextView

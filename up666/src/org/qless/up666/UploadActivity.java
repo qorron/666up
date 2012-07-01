@@ -47,6 +47,7 @@ import android.provider.MediaStore.Images;
 import android.text.ClipboardManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.util.Linkify;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -170,8 +171,8 @@ public class UploadActivity extends Activity {
 			// we have a row id, but at least one 'nut null' field is null, so go get it from the db
 			Log.d("onCreate", "mUploadRowId is here, fetching fields from the db: " + mUploadRowId);
 			fetchFromDb();
-			guiDone();
 			populateFields();
+			guiDone();
 		} else if (mImageURL == null) {
 			// since there is no previously stored url, we have to upload the
 			// file
@@ -435,6 +436,7 @@ public class UploadActivity extends Activity {
 		if (mNfcAdapter != null) {
 			((TextView) findViewById(R.id.nfcAnnouncement)).setVisibility(View.VISIBLE);
 		}
+	    Linkify.addLinks(mImageURLTextView, Linkify.ALL);
 	}
 
 	/**
