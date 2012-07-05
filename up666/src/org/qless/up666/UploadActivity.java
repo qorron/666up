@@ -178,13 +178,13 @@ public class UploadActivity extends Activity {
 			// file
 			Log.d("onCreate", "no mUploadRowId and no mImageURL -> uplaod");
 			decodeIntent();
+			generateThumbnail();
 			if (mIntentOk) {
 				mMimeTypeTextView.setText(mMimeType);
 				mFilePathTextView.setText(mFilePath);
 				new ImageUploadTask().execute(mFilePath);
 			}
 			guiProcessing();
-			generateThumbnail();
 		} else {
 			// we already have a url, so we just update the gui and make it look
 			// like expected.
@@ -389,13 +389,7 @@ public class UploadActivity extends Activity {
 
 	private void generateThumbnail() {
 		if (mFilePath != null && mThumbnail == null) {
-			try {
-				DisplayMetrics metrics = new DisplayMetrics();
-				getWindowManager().getDefaultDisplay().getMetrics(metrics);
-				mThumbnail = ImageProcessor.thumbnail(mFilePath, 100 * metrics.densityDpi / 160);
-			} catch (Exception e) {
-				// no file, no thumbnail.
-			}
+			new GenerateThumbnailTask().execute(mFilePath);
 		}
 	}
 
@@ -436,7 +430,7 @@ public class UploadActivity extends Activity {
 		if (mNfcAdapter != null) {
 			((TextView) findViewById(R.id.nfcAnnouncement)).setVisibility(View.VISIBLE);
 		}
-	    Linkify.addLinks(mImageURLTextView, Linkify.ALL);
+		Linkify.addLinks(mImageURLTextView, Linkify.ALL);
 	}
 
 	/**
@@ -611,6 +605,62 @@ public class UploadActivity extends Activity {
 					populateFields();
 					guiDone();
 					setupBeam();
+				}
+			}
+		}
+	}
+
+	/**
+	 * handles the resize and upload process in a background thread
+	 */
+	private class GenerateThumbnailTask extends AsyncTask<String, Integer, byte[]> {
+
+		private Exception ex;
+		private Error error;
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#onPreExecute()
+		 */
+		@Override
+		protected void onPreExecute() {
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#doInBackground(Params[])
+		 */
+		@Override
+		protected byte[] doInBackground(String... params) {
+
+			byte[] thumbnail = null;
+			try {
+				DisplayMetrics metrics = new DisplayMetrics();
+				getWindowManager().getDefaultDisplay().getMetrics(metrics);
+				mThumbnail = ImageProcessor.thumbnail(params[0], 100 * metrics.densityDpi / 160);
+			} catch (Exception e) {
+				// no file, no thumbnail.
+			}
+
+			return thumbnail;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+		 */
+		@Override
+		protected void onPostExecute(byte[] result) {
+			mProgress.setVisibility(ProgressBar.INVISIBLE);
+			if (ex != null || error != null) {
+				errorDialogue(ex, error);
+			} else {
+				if (result != null) {
+					mThumbnail = result;
+					populateFields();
 				}
 			}
 		}

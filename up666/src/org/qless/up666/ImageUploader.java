@@ -35,6 +35,7 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.graphics.Bitmap;
 import android.media.ExifInterface;
 import android.util.Log;
 
@@ -52,6 +53,7 @@ public class ImageUploader {
 	 * @param filename
 	 *            the path to the image
 	 * @return the {@link URL} of the uploaded image or null if the upload failed
+	 * 
 	 * @throws MalformedURLException
 	 *             if the upload failed
 	 * @throws IOException
@@ -80,7 +82,22 @@ public class ImageUploader {
 
 		URL imageURL = null;
 
+		File file = new File(filename);
+		// Get the number of bytes in the file
+		long length = file.length();
+
+		Bitmap resizedImage = null;
+
+		if (length > maxSize || needsRotation(filename)) {
+
+			resizedImage = ImageProcessor.process(filename);
+
+			// .compress(Bitmap.CompressFormat.JPEG, 90, outputStream) ;
+
+		}
+
 		URL url = new URL(urlServer); // theoretically possible MalformedURLException
+		Log.d("ImageUpload", "connecting..");
 		connection = (HttpURLConnection) url.openConnection(); // IOException -> network error
 
 		// Allow Inputs & Outputs
@@ -88,6 +105,7 @@ public class ImageUploader {
 		connection.setDoOutput(true);
 		connection.setUseCaches(false);
 
+		Log.d("ImageUpload", "setting req property");
 		// Enable POST method
 		connection.setRequestMethod("POST"); // ProtocolException ->
 
@@ -96,6 +114,7 @@ public class ImageUploader {
 
 		outputStream = new DataOutputStream(connection.getOutputStream()); // IOException -> network
 																			// error
+		Log.d("ImageUpload", "writing to stream");
 
 		outputStream.writeBytes(twoHyphens + boundary + lineEnd); // IOException -> network error
 		outputStream.writeBytes("Content-Disposition: form-data; name=\"MAX_FILE_SIZE\"" + lineEnd);
@@ -112,13 +131,10 @@ public class ImageUploader {
 				+ pathToOurFile + "\"" + lineEnd);
 		outputStream.writeBytes(lineEnd);
 
-		File file = new File(filename);
-
-		// Get the number of bytes in the file
-		long length = file.length();
-
-		if (length > maxSize || needsRotation(filename)) {
-			ImageProcessor.process(filename, outputStream);
+		if (resizedImage != null) {
+			Log.d("ImageUpload", "compressing");
+			resizedImage.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
+			Log.d("ImageUpload", "done");
 		} else {
 			// FileNotFoundException -> most likely the filename got escaped and needs to be
 			// unescaped (known to happen on froyo+ and sending from a
@@ -142,18 +158,19 @@ public class ImageUploader {
 			fileInputStream.close(); // IOException (file)
 
 		}
+		Log.d("ImageUpload", "upload done");
 		outputStream.writeBytes(lineEnd); // IOException -> network error
 		outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
 
 		outputStream.flush(); // IOException -> network error
 		outputStream.close(); // ..
-
+		Log.d("ImageUpload", "upload close, flush");
 		// Responses from the server (code and message)
 		int serverResponseCode = connection.getResponseCode(); // IOException -> network error
 		String serverResponseMessage = connection.getResponseMessage(); // IOException -> network
 																		// error
 
-		Log.i("ImageUpload", serverResponseCode + serverResponseMessage);
+		Log.i("ImageUpload", "response: " + serverResponseCode + serverResponseMessage);
 		InputStream in = new BufferedInputStream(connection.getInputStream()); // IOException ->
 																				// network error
 
@@ -169,7 +186,7 @@ public class ImageUploader {
 	}
 
 	/**
-	 * Tkes the whole webpage as a String and tries to parse the image url
+	 * Takes the whole webpage as a String and tries to parse the image url
 	 * 
 	 * @param page
 	 *            the HTML document
@@ -185,12 +202,15 @@ public class ImageUploader {
 			return null;
 		}
 	}
+
 	private static boolean needsRotation(String filename) {
 		ExifInterface exif;
 		try {
 			exif = new ExifInterface(filename);
-			int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-			if (orientation == ExifInterface.ORIENTATION_NORMAL || orientation == ExifInterface.ORIENTATION_UNDEFINED ){
+			int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+					ExifInterface.ORIENTATION_NORMAL);
+			if (orientation == ExifInterface.ORIENTATION_NORMAL
+					|| orientation == ExifInterface.ORIENTATION_UNDEFINED) {
 				return false;
 			}
 		} catch (IOException e) {

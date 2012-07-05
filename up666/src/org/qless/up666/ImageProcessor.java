@@ -59,10 +59,136 @@ public class ImageProcessor {
 		ByteArrayOutputStream thumbnailStream = new ByteArrayOutputStream(bytes);
 		process(imagePath, thumbnailStream, size, true);
 
-		Log.i("ImageScale", "requested size: " + size + " projected bytes: " + bytes
+		Log.i("ImageScale", "thumbnail requested size: " + size + " projected bytes: " + bytes
 				+ " used bytes: " + thumbnailStream.size());
 
 		return thumbnailStream.toByteArray();
+	}
+
+	/**
+	 * loads, resizes and returns the image as Bitmap.
+	 * 
+	 * @param imagePath
+	 *            the path to the image file
+	 * @return the scaled down image
+	 */
+	public static Bitmap process(String imagePath) {
+		return process(imagePath, maxPixel, false);
+	}
+
+	/**
+	 * loads, resizes and returns the image as Bitmap.
+	 * 
+	 * @param imagePath
+	 *            the path to the image file
+	 * @param maxDimension
+	 *            maximum pixels in one direction
+	 * @param strict
+	 *            set to true if the resulting image should have exactly this dimension
+	 * @return the scaled down image
+	 */
+	public static Bitmap process(String imagePath, int maxDimension, boolean strict) {
+
+		Log.d("ImageScale", "check rotation");
+		int rotate = 0;
+		try {
+			ExifInterface exif = new ExifInterface(imagePath);
+			switch (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+					ExifInterface.ORIENTATION_NORMAL)) {
+			case ExifInterface.ORIENTATION_ROTATE_90:
+				rotate = 90;
+				break;
+			case ExifInterface.ORIENTATION_ROTATE_180:
+				rotate = 180;
+				break;
+			case ExifInterface.ORIENTATION_ROTATE_270:
+				rotate = 270;
+				break;
+			}
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Log.d("ImageScale", "check dimensions");
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = true; // to get the size without actually
+											// loading the image into the
+											// memory.
+		Bitmap bitmapOrg = BitmapFactory.decodeFile(imagePath, options);
+
+		int originalHeight = options.outHeight;
+		int originalWidth = options.outWidth;
+
+		int originalPixels = originalHeight * originalWidth;
+		// Note: change this to long once gigapixel cameras have arrived
+
+		int maxPixels = maxDimension * maxDimension;
+		int maxPixelsForLoading = maxPixels;
+
+		if (strict) {
+			maxPixelsForLoading *= 4;
+			// multiply by 4 to leave some
+			// room and scale down to the
+			// exact size in memory
+		}
+
+		double baseInSampleSize = 1;
+		Log.i("ImageScale", "maxPixelsForLoading: " + maxPixelsForLoading + " originalPixels: "
+				+ originalPixels + " baseInSampleSize: " + baseInSampleSize + " first");
+
+		for (; originalPixels > maxPixelsForLoading; originalPixels /= 4) {
+			baseInSampleSize *= 2;
+		}
+
+		// outMimeType
+
+		options.inJustDecodeBounds = false;
+		options.inSampleSize = (int) baseInSampleSize;
+
+		Log.i("ImageScale", "maxPixelsForLoading: " + maxPixelsForLoading + " originalPixels: "
+				+ originalPixels + " baseInSampleSize: " + baseInSampleSize + " final");
+
+		bitmapOrg = BitmapFactory.decodeFile(imagePath, options);
+		Log.d("ImageScale", "Bitmap decoded");
+		if (strict || rotate != 0) {
+			int width = bitmapOrg.getWidth();
+			int height = bitmapOrg.getHeight();
+
+			int largestDimension = 0;
+			if (width > height) {
+				largestDimension = width;
+			} else {
+				largestDimension = height;
+			}
+
+			// calculate the scale
+			float scaleWidth = 1;
+			float scaleHeight = 1;
+			scaleWidth = scaleHeight = ((float) maxDimension) / largestDimension;
+
+			Log.i("ImageScale", "width: " + width + " height: " + height + "scale: " + scaleWidth);
+
+			// create a matrix for the manipulation
+			Matrix matrix = new Matrix();
+			// resize the bit map
+			matrix.postScale(scaleWidth, scaleHeight);
+			// rotate the Bitmap
+			matrix.postRotate(rotate);
+			Log.i("ImageScale", "rotate: " + rotate);
+
+			// recreate the new Bitmap
+			Bitmap resizedBitmap = Bitmap
+					.createBitmap(bitmapOrg, 0, 0, width, height, matrix, true);
+			Log.d("ImageScale", "Bitmap created");
+			Log.i("ImageScale", "new image width: " + resizedBitmap.getHeight() + " height: "
+					+ resizedBitmap.getWidth());
+			return resizedBitmap;
+		} else {
+			Log.d("ImageScale", "Bitmap fast rescale");
+			return bitmapOrg;
+		}
 	}
 
 	/**
@@ -92,102 +218,7 @@ public class ImageProcessor {
 	 */
 	public static void process(String imagePath, OutputStream imageOutputStream, int maxDimension,
 			boolean strict) {
-		
-		int rotate = 0;
-		try {
-			ExifInterface exif = new ExifInterface(imagePath);
-			switch (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
-			case ExifInterface.ORIENTATION_ROTATE_90:
-				rotate = 90;
-				break;
-			case ExifInterface.ORIENTATION_ROTATE_180:
-				rotate = 180;
-				break;
-			case ExifInterface.ORIENTATION_ROTATE_270:
-				rotate = 270;
-				break;
-			}
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-		
-		BitmapFactory.Options options = new BitmapFactory.Options();
-		options.inJustDecodeBounds = true; // to get the size without actually
-											// loading the image into the
-											// memory.
-		Bitmap bitmapOrg = BitmapFactory.decodeFile(imagePath, options);
-
-		int originalHeight = options.outHeight;
-		int originalWidth = options.outWidth;
-
-		int originalPixels = originalHeight * originalWidth;
-		// Note: change this to long once gigapixel cameras have arrived
-
-		int maxPixels = maxDimension * maxDimension;
-		int maxPixelsForLoading = maxPixels;
-
-		if (strict) {
-			maxPixelsForLoading *= 4;
-			// multiply by 4 to leave some
-			// room and scale down to the
-			// exact size in memory
-		}
-
-		double baseInSampleSize = 1;
-		Log.i("ImageScale", "maxPixelsForLoading: " + maxPixelsForLoading + " originalPixels: "
-				+ originalPixels + " baseInSampleSize: " + baseInSampleSize);
-
-		for (; originalPixels > maxPixelsForLoading; originalPixels /= 4) {
-			baseInSampleSize *= 2;
-		}
-
-		// outMimeType
-
-		options.inJustDecodeBounds = false;
-		options.inSampleSize = (int) baseInSampleSize;
-
-		Log.i("ImageScale", "maxPixelsForLoading: " + maxPixelsForLoading + " originalPixels: "
-				+ originalPixels + " baseInSampleSize: " + baseInSampleSize);
-
-		bitmapOrg = BitmapFactory.decodeFile(imagePath, options);
-
-		if (strict || rotate != 0) {
-			int width = bitmapOrg.getWidth();
-			int height = bitmapOrg.getHeight();
-			
-			int largestDimension = 0;
-			if (width > height) {
-				largestDimension = width;
-			} else {
-				largestDimension = height;
-			}
-
-			// calculate the scale
-			float scaleWidth = 1;
-			float scaleHeight = 1;
-			scaleWidth = scaleHeight = ((float) maxDimension) / largestDimension;
-
-			Log.i("ImageScale", "width: " + width + " height: " + height + "scale: " + scaleWidth);
-
-			// create a matrix for the manipulation
-			Matrix matrix = new Matrix();
-			// resize the bit map
-			matrix.postScale(scaleWidth, scaleHeight);
-			// rotate the Bitmap
-			matrix.postRotate(rotate);
-			Log.i("ImageScale", "rotate: " + rotate);
-
-			// recreate the new Bitmap
-			Bitmap resizedBitmap = Bitmap
-					.createBitmap(bitmapOrg, 0, 0, width, height, matrix, true);
-			resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, imageOutputStream);
-			Log.i("ImageScale", "new image width: " + resizedBitmap.getHeight() + " height: " +  resizedBitmap.getWidth());
-		} else {
-			bitmapOrg.compress(Bitmap.CompressFormat.JPEG, 90, imageOutputStream);
-		}
+		process(imagePath, maxDimension, strict).compress(Bitmap.CompressFormat.JPEG, 90,
+				imageOutputStream);
 	}
 }
