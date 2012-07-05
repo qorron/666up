@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="imageURL">http://666kb.com</string>
-    <string name="imageHoster">http://666kb.com</string>
-    <string name="devMediumText">Medium Text</string>
-    <string name="devSmallText">Small Text</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="imageURL" tools:ignore="MissingTranslation">http://666kb.com</string>
+    <string name="imageHoster" tools:ignore="MissingTranslation">http://666kb.com</string>
+    <string name="devMediumText" tools:ignore="MissingTranslation">Medium Text</string>
+    <string name="devSmallText" tools:ignore="MissingTranslation">Small Text</string>
 
-    <string name="pref_tab_action_default">copy</string>
-    <string name="titleUpload">Upload</string>
+    <string name="pref_tab_action_default" tools:ignore="MissingTranslation">copy</string>
+    <string name="titleUpload" tools:ignore="MissingTranslation">Upload</string>
     
     <string name="app_name">666up!</string>
     <string name="mimeType">No mime type</string>

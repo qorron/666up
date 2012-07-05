@@ -14,7 +14,7 @@
      limitations under the License.
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Used in app/menu examples -->
     <string-array name="pref_tab_action">
         <item>Copy</item>
@@ -23,7 +23,7 @@
     </string-array>
 
     <!-- Used in app/menu examples -->
-    <string-array name="pref_tab_action_values">
+    <string-array name="pref_tab_action_values" tools:ignore="MissingTranslation">
         <item>copy</item>
         <item>open</item>
         <item>share</item>
